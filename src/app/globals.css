@@ -3,26 +3,24 @@
 @import 'tailwindcss/utilities';
 
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+
+.bg-primary {
+  background-color: #aacef2;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+/* Background gradient classes */
+.bg-gradient-to-b {
+  background-image: var(--gradient-to-b, linear-gradient(0deg, #000, #fff));
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.from-transparent {
+  --gradient-stops: transparent, var(--background-end-start);
+}
+
+.to-bg-end-start {
+  --gradient-stops: var(--background-end-start), transparent;
+}
+
+.via-bg-background-end {
+  --gradient-stops: transparent, var(--background-end-start), transparent;
 }
