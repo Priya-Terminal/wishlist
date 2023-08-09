@@ -25,7 +25,7 @@ const Home = () => {
 
   const generateConsolidatedLink = (items) => {
     const links = items.map((item) => item.link);
-    const consolidatedLink = links.join(', '); // Use your desired separator
+    const consolidatedLink = links.join(', ');
     return consolidatedLink;
   };
 
