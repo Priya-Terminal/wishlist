@@ -30,4 +30,3 @@ const WishlistForm = ({ onSubmit }) => {
 };
 
 export default WishlistForm;
-
