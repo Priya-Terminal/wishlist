@@ -10,4 +10,3 @@ export default (req, res) => {
     res.status(405).end();
   }
 };
-
