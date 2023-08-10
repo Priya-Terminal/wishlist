@@ -1,27 +1,27 @@
-import { connectToDatabase } from './db';
+import { getDatabase, WishlistItem } from '@/models';
 
 export default async (req, res) => {
   try {
     const { link } = req.body;
 
-    const db = await connectToDatabase();
-    const collection = db.collection('items'); 
+    await getDatabase();
 
-    const newItem = { link };
-    const result = await collection.insertOne(newItem);
+    const newItem = new WishlistItem({
+      title: 'New Item',
+      price: 0,
+      image: 'https://via.placeholder.com/150',
+      priority: 0,
+      userId: '1',
+      link,
+    });
 
-    if (result.insertedCount > 0) {
-      res.status(201).json(result.ops[0]);
-    } else {
-      res.status(500).json({ error: 'Failed to add item' });
-    }
+
+    await newItem.save();
+
+    res.send(newItem);
   } catch (error) {
     console.error('Error adding item to MongoDB:', error);
     console.error(error.stack);
     res.status(500).json({ error: 'Failed to add item' });
   }
 };
-
-
-
-//'mongodb+srv://priya:uljrV1pGvs0vQVME@cluster0.cqf9jj2.mongodb.net/?retryWrites=true&w=majority'

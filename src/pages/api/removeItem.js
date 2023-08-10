@@ -1,5 +1,5 @@
-import { client } from './db';
 import { ObjectId } from 'mongodb';
+import { getDatabase } from '@/models';
 
 export default async (req, res) => {
   if (req.method === 'DELETE') {
@@ -7,7 +7,7 @@ export default async (req, res) => {
     console.log('Deleting item with ID:', itemId);
 
     try {
-      const db = client.db('wishlist'); 
+      const db = await getDatabase();
       const collection = db.collection('items');
 
       const objectId = ObjectId(itemId);
