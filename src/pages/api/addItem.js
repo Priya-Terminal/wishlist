@@ -2,6 +2,9 @@ import { getDatabase, WishlistItem } from '@/models';
 
 export default async (req, res) => {
   try {
+
+    await getDatabase();
+
     const { link } = req.body;
 
     await getDatabase();
