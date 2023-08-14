@@ -1,7 +1,6 @@
-
 import { useState } from 'react';
 
-const SignupForm = ({ onSignup }) => {
+const SignupForm = ({ onSignup, signupResult }) => {
   const [username, setUsername] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
@@ -28,6 +27,10 @@ const SignupForm = ({ onSignup }) => {
   const isValidPassword = (password) => {
     const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}$/;
     return passwordPattern.test(password);
+  };
+
+  const handleAlert = (message) => {
+    alert(message);
   };
 
   return (
@@ -98,6 +101,7 @@ const SignupForm = ({ onSignup }) => {
         <div className="flex space-x-2">
           <button
             type="submit"
+            onClick={() => handleAlert('Signup successful!')}
             className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600"
           >
             Signup
@@ -107,6 +111,9 @@ const SignupForm = ({ onSignup }) => {
           {validationError && (
             <p className="text-red-500 text-sm mt-1">{validationError}</p>
           )}
+          {signupResult && signupResult.success && (
+            <p className="text-green-500 text-sm mt-1">Signup successful! You can now log in.</p>
+          )}
         </div>
       </form>
     </div>
@@ -114,6 +121,4 @@ const SignupForm = ({ onSignup }) => {
 };
 
 export default SignupForm;
-
-
 

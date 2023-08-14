@@ -1,13 +1,16 @@
-
 import { useState } from 'react';
 
-const LoginForm = ({ onLogin }) => {
+const LoginForm = ({ onLogin, loginResult }) => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onLogin({ mobileNumber, password });
+  };
+
+  const handleAlert = (message) => {
+    alert(message);
   };
 
   return (
@@ -42,15 +45,20 @@ const LoginForm = ({ onLogin }) => {
         </div>
         <button
           type="submit"
+          onClick={() => handleAlert('Login successful!')}
           className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600 text-black"
         >
           Login
         </button>
       </form>
+      <div className="mb-4">
+        {loginResult && loginResult.success && (
+          <p className="text-green-500 text-sm mt-1">Login successful! Welcome back.</p>
+        )}
+      </div>
     </div>
   );
 };
 
 export default LoginForm;
-
 
