@@ -38,6 +38,7 @@ const Home = () => {
         },
         body: JSON.stringify(userData),
       });
+      alert(JSON.stringify({ status: response.status, ok: response.ok, statusText: response.statusText }));
 
       if (response.ok) {
         setIsLoggedIn(true);
