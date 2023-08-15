@@ -8,10 +8,10 @@ export default async (req, res) => {
     console.log('Received signup request:', req.body);
     console.log('Type of req.body:', typeof req.body);
     const { username, mobileNumber, password, confirmPassword } = req.body;
-    
+
     const existingUser = await User.findOne({ mobileNumber });
     if (existingUser) {
-      console.log('user exisits')
+console.log('user exisits')
       return res.status(404).json({ error: 'User already exists' });
     }
 
@@ -29,19 +29,16 @@ export default async (req, res) => {
       });
     }
 
-    
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
-      username,
-      mobileNumber,
+      email,
       password: hashedPassword,
     });
-    
 
     await getDatabase();
     await newUser.save();
-    
 
     console.log('User saved successfully');
     res.status(201).json({ message: 'User created successfully' });
