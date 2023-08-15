@@ -1,12 +1,18 @@
 import { useState } from 'react';
 
 const LoginForm = ({ onLogin, loginResult }) => {
-  const [mobileNumber, setMobileNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onLogin({ mobileNumber, password });
+    const  loginSuccess = await onLogin({ email, password });
+
+    if (loginSuccess) {
+      handleAlert('Login successful!');
+    }else {
+      handleAlert('An error occurred while logging in.');
+    }
   };
 
   const handleAlert = (message) => {
@@ -18,15 +24,15 @@ const LoginForm = ({ onLogin, loginResult }) => {
       <h2 className="text-2xl font-semibold mb-4">Login</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="mobileNumber" className="block text-sm font-medium mb-1 text-black">
-            Mobile Number
+          <label htmlFor="email" className="block text-sm font-medium mb-1 text-black">
+            Email
           </label>
           <input
-            type="text"
-            id="mobileNumber"
+            type="email"
+            id="email"
             className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-black"
-            value={mobileNumber}
-            onChange={(e) => setMobileNumber(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
@@ -43,13 +49,21 @@ const LoginForm = ({ onLogin, loginResult }) => {
             required
           />
         </div>
-        <button
-          type="submit"
-          onClick={() => handleAlert('Login successful!')}
-          className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600 text-black"
-        >
-          Login
-        </button>
+        <div className="flex justify-between items-center">
+          <button
+            type="submit"
+            className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600 text-black"
+          >
+            Login
+          </button>
+          <div className="flex items-center ml-4 font-bold">
+            <div className="flex items-center space-x-2"> {/* Wrapping div */}
+              <a href="/" className="text-center">
+                Back to Home
+              </a>
+            </div>
+          </div>
+        </div>
       </form>
       <div className="mb-4">
         {loginResult && loginResult.success && (
@@ -61,4 +75,3 @@ const LoginForm = ({ onLogin, loginResult }) => {
 };
 
 export default LoginForm;
-

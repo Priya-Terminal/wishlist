@@ -1,27 +1,29 @@
 import { useState } from 'react';
+import Link from 'next/link';
 
-const SignupForm = ({ onSignup, signupResult }) => {
-  const [username, setUsername] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
+const SignupForm = ({ onSignup }) => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [validationError, setValidationError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setPasswordsMatch(false);
       return;
     }
-  
+
     if (!isValidPassword(password)) {
       setValidationError(
         'Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, digit, and special character.'
       );
       return;
     }
-    onSignup({ username, mobileNumber, password, confirmPassword });
+
+    onSignup({ email, password });
+    handleAlert('Signup successful! You can now log in.');
   };
 
   const isValidPassword = (password) => {
@@ -38,28 +40,15 @@ const SignupForm = ({ onSignup, signupResult }) => {
       <h2 className="text-2xl font-semibold mb-4">Signup</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="username" className="block text-sm font-medium mb-1 text-black">
-            Username
+          <label htmlFor="email" className="block text-sm font-medium mb-1 text-black">
+            Email
           </label>
           <input
-            type="text"
-            id="username"
+            type="email"
+            id="email"
             className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-black"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="mobileNumber" className="block text-sm font-medium mb-1 text-black">
-            Mobile Number
-          </label>
-          <input
-            type="text"
-            id="mobileNumber"
-            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-black"
-            value={mobileNumber}
-            onChange={(e) => setMobileNumber(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
@@ -98,22 +87,19 @@ const SignupForm = ({ onSignup, signupResult }) => {
             <p className="text-red-500 text-sm mt-1">Passwords do not match</p>
           )}
         </div>
-        <div className="flex space-x-2">
-          <button
-            type="submit"
-            onClick={() => handleAlert('Signup successful!')}
+        <div className="flex space-x-2 justify-between items-center">
+          <a
+            href="#"
+            onClick={handleSubmit}
             className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600"
           >
             Signup
-          </button>
-        </div>
-        <div className="mb-4">
-          {validationError && (
-            <p className="text-red-500 text-sm mt-1">{validationError}</p>
-          )}
-          {signupResult && signupResult.success && (
-            <p className="text-green-500 text-sm mt-1">Signup successful! You can now log in.</p>
-          )}
+          </a>
+          <div className="flex items-center font-bold">
+          <a href="/" className="text-center">
+              Back to Home
+            </a>
+          </div>
         </div>
       </form>
     </div>
@@ -121,4 +107,3 @@ const SignupForm = ({ onSignup, signupResult }) => {
 };
 
 export default SignupForm;
-

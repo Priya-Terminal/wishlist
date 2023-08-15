@@ -6,16 +6,16 @@ export default async (req, res) => {
   try {
 
     await getDatabase();
-    const { mobileNumber, password } = req.body;
+    const { email, password } = req.body;
 
-    const user = await User.findOne({ mobileNumber });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Incorrect username or password' });
     }
 
 
