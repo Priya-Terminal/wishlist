@@ -175,14 +175,14 @@ return (
           {consolidatedLink && (
             <div className="mt-6 p-4 border rounded-md bg-gray-200">
               <p className="font-semibold mb-2 text-black">Consolidated Link:</p>
-              <a
+              <Link
                 href={consolidatedLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:underline"
               >
                 {consolidatedLink}
-              </a>
+              </Link>
             </div>
           )}
 
@@ -204,13 +204,13 @@ return (
           )}
 
           <div className="mt-4">
-            <a
+            <button
               href="#"
               onClick={handleLogoutLinkClick}
               className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
             >
               Logout
-            </a>
+            </button>
           </div>
         </div>
       ) : (

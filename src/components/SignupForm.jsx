@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import axios from "axios";
 
 const SignupForm = () => {
   const router = useRouter();
@@ -28,9 +27,11 @@ const SignupForm = () => {
     }
 
     try {
-      const response = await axios.post("/api/auth/signup", { email, password });
+      const response = await fetch("/api/auth/signup", {
+        method: 'POST',
+        body: JSON.stringify({ email, password })
+       });
       if (response.status >= 200 && response.status < 300) {
-        alert("Signup successful! You can now log in.");
         router.push("/");
       }
     } catch (error) {
@@ -101,7 +102,7 @@ const SignupForm = () => {
         <div className="flex space-x-2 justify-between items-center">
           <button
             type="submit"
-            className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600 text-black"
+            className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600"
           >
             Sign Up
           </button>

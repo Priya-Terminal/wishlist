@@ -17,11 +17,7 @@ function SignInFormComponent({ onSignIn }) {
       });
       
       if (response.ok) {
-        alert('Sign-in successful');
         onSignIn(); 
-      } else {
-        const data = await response.json();
-        alert(data.message); 
       }
     } catch (error) {
       console.error('Error:', error);
