@@ -175,14 +175,9 @@ return (
           {consolidatedLink && (
             <div className="mt-6 p-4 border rounded-md bg-gray-200">
               <p className="font-semibold mb-2 text-black">Consolidated Link:</p>
-              <a
-                href={consolidatedLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                {consolidatedLink}
-              </a>
+              <p className="text-blue-600 hover:underline">
+                <Link href={consolidatedLink}>Consolidated Link Text</Link>
+              </p>
             </div>
           )}
 
@@ -204,13 +199,14 @@ return (
           )}
 
           <div className="mt-4">
-            <a
-              href="#"
-              onClick={handleLogoutLinkClick}
-              className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
-            >
-              Logout
-            </a>
+            <Link href="#">
+              <a
+                onClick={handleLogoutLinkClick}
+                className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
+              >
+                Logout
+              </a>
+            </Link>
           </div>
         </div>
       ) : (
@@ -220,23 +216,23 @@ return (
           </div>
           <div className="mb-4 flex justify-center">
             <Link href="/signin">
-              <div
+              <span
                 className={`text-blue-700 font-bold hover:underline ${
                   isLoggingIn ? 'opacity-50 pointer-events-none' : ''
                 }`}
                 onClick={handleLoginLinkClick}
               >
                 Sign in
-              </div>
+              </span>
             </Link>
             <span className="mx-2">|</span>
             <Link href="/signup">
-              <div
+              <span
                 className="text-green-700 font-bold hover:underline"
                 onClick={handleSignupLinkClick}
               >
                 Sign up
-              </div>
+              </span>
             </Link>
           </div>
         </div>
@@ -244,6 +240,6 @@ return (
     </div>
   </div>
 );
-};
+}
 
 export default Home;
