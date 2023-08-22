@@ -1,44 +1,51 @@
-import { useState } from 'react';
-import Link from 'next/link';
+import React, { useState } from "react";
+import { useRouter } from "next/router";
+import axios from "axios";
 
-const SignupForm = ({ onSignup }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordsMatch, setPasswordsMatch] = useState(true);
-  const [validationError, setValidationError] = useState('');
+const SignupForm = () => {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [matchError, setMatchError] = useState("");
+  const [signupError, setSignupError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      setPasswordsMatch(false);
-      return;
-    }
 
-    if (!isValidPassword(password)) {
-      setValidationError(
-        'Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, digit, and special character.'
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setPasswordError(
+        "Password must be at least 8 characters and contain uppercase, lowercase, digit, and special character."
       );
       return;
     }
 
-    onSignup({ email, password });
-    handleAlert('Signup successful! You can now log in.');
-  };
+    if (password !== confirmPassword) {
+      setMatchError("Passwords do not match.");
+      return;
+    }
 
-  const isValidPassword = (password) => {
-    const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}$/;
-    return passwordPattern.test(password);
-  };
-
-  const handleAlert = (message) => {
-    alert(message);
+    try {
+      const response = await axios.post("/api/auth/signup", { email, password });
+      if (response.status >= 200 && response.status < 300) {
+        alert("Signup successful! You can now log in.");
+        router.push("/");
+      }
+    } catch (error) {
+      setSignupError("An error occurred during signup.");
+      console.error("Sign Up Error:", error);
+    }
   };
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-md shadow-md text-black">
-      <h2 className="text-2xl font-semibold mb-4">Signup</h2>
-      <form onSubmit={handleSubmit}>
+      <h2 className="text-2xl font-semibold mb-4">Sign Up</h2>
+      {signupError && (
+        <div className="text-red-500 mb-2">{signupError}</div>
+      )}
+      <form onSubmit={handleSignUp}>
         <div className="mb-4">
           <label htmlFor="email" className="block text-sm font-medium mb-1 text-black">
             Email
@@ -65,6 +72,11 @@ const SignupForm = ({ onSignup }) => {
             required
           />
         </div>
+
+        {passwordError && (
+          <div className="text-red-500 text-sm mt-1">{passwordError}</div>
+        )}
+
         <div className="mb-4">
           <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1 text-black">
             Confirm Password
@@ -73,33 +85,26 @@ const SignupForm = ({ onSignup }) => {
             type="password"
             id="confirmPassword"
             className={`w-full px-3 py-2 rounded border focus:ring ${
-              passwordsMatch ? 'focus:ring-blue-300' : 'focus:ring-red-300'
+              password === confirmPassword ? 'focus:ring-blue-300' : 'focus:ring-red-300'
             } text-black`}
             value={confirmPassword}
             onChange={(e) => {
               setConfirmPassword(e.target.value);
-              setPasswordsMatch(true);
-              setValidationError('');
+              setMatchError(''); 
             }}
             required
           />
-          {!passwordsMatch && (
-            <p className="text-red-500 text-sm mt-1">Passwords do not match</p>
+          {password !== confirmPassword && (
+            <p className="text-red-500 text-sm mt-1">{matchError}</p>
           )}
         </div>
         <div className="flex space-x-2 justify-between items-center">
-          <a
-            href="#"
-            onClick={handleSubmit}
-            className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600"
+          <button
+            type="submit"
+            className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600 text-black"
           >
-            Signup
-          </a>
-          <div className="flex items-center font-bold">
-          <a href="/" className="text-center">
-              Back to Home
-            </a>
-          </div>
+            Sign Up
+          </button>
         </div>
       </form>
     </div>
@@ -107,3 +112,4 @@ const SignupForm = ({ onSignup }) => {
 };
 
 export default SignupForm;
+

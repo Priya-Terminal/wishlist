@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import WishlistForm from '../components/WishlistForm';
-import LoginForm from '../components/LoginForm';
-import SignupForm from '../components/SignupForm';
+import SigninForm from '../components/SigninForm';
+import SignupPage from './signup'; 
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const Home = () => {
   const [consolidatedLink, setConsolidatedLink] = useState('');
@@ -10,6 +12,9 @@ const Home = () => {
   const [showSignupForm, setShowSignupForm] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginResult, setLoginResult] = useState(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchData() {
@@ -97,37 +102,38 @@ const Home = () => {
     setShowLoginForm(false);
   };
 
-  // In the component where onLogin is defined (e.g., Home component)
-const handleLogin = async (userData) => {
-  try {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    });
-
-    if (response.ok) {
-      setIsLoggedIn(true);
-      setShowLoginForm(false);
-      console.log('Login successful');
-      return true; // Return success flag
-    } else {
-      console.error('Failed to login');
-      return false; // Return failure flag
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    alert('An error occurred during login.');
-    return false; // Return failure flag
-  } finally {
-    setIsLoggingIn(false);
-  }
-};
-
+  const handleLogin = async (userData) => {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
   
-  const handleSignup = async (userData) => {
+      if (response.ok) {
+        setIsLoggedIn(true);
+        setShowLoginForm(false);
+        setLoginResult('Login successful'); 
+        router.push('/WishlistForm');
+        return true;
+      } else {
+        console.error('Failed to login');
+        setLoginResult('Login failed'); 
+        return false;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setLoginResult('An error occurred during login.'); 
+      return false;
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+  
+
+ const handleSignup = async (userData) => {
     try {
       console.log('Sending signup request:', userData);
       const response = await fetch('/api/auth/signup', {
@@ -142,14 +148,14 @@ const handleLogin = async (userData) => {
         setIsLoggedIn(true);
         setShowSignupForm(false);
         console.log('Signup successful');
-        // window.location.href = '/';
+        window.location.href = '/';
       } else {
         console.error('Failed to signup');
       }
     } catch (error) {
       console.error('Error:', error);
     }
-  };
+};
 
 return (
   <div className="min-h-screen bg-primary flex justify-center items-center">
@@ -157,10 +163,12 @@ return (
       <h1 className="text-4xl font-timesnewRoman mb-6 text-center text-primary text-black">
         Wishlist Consolidator
       </h1>
-      
-      {showLoginForm && <LoginForm onLogin={handleLogin} />}
-      {showSignupForm && <SignupForm onSignup={handleSignup} />}
-      {isLoggedIn && !showLoginForm && !showSignupForm && (
+
+      {showLoginForm && <SigninForm onLogin={handleLogin} loginResult={loginResult} />}
+
+      {showSignupForm && <SignupPage onSignup={handleSignup} />}
+
+      {isLoggedIn ? (
         <div>
           <WishlistForm onSubmit={handleFormSubmit} />
 
@@ -181,22 +189,17 @@ return (
           {wishlistItems.length > 0 && (
             <div className="mt-6">
               <h2 className="text-lg font-semibold mb-4 text-black">Wishlist Items:</h2>
-              <ul>
-                {wishlistItems.map((item) => (
-                  <li
-                    key={item._id}
-                    className="flex items-center justify-between py-2 border-b border-gray-300 last:border-b-0"
+              {wishlistItems.map((item) => (
+                <div key={item._id} className="flex justify-between text-black items-center mb-2">
+                  <p>{item.link}</p>
+                  <button
+                    onClick={() => handleDeleteItem(item._id)}
+                    className="bg-red-500 text-white py-1 px-2 rounded-md hover:bg-red-600"
                   >
-                    <span className="text-gray-700">{item.link}</span>
-                    <button
-                      onClick={() => handleDeleteItem(item._id)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      Delete
-                    </button>
-                  </li>
-                ))}
-              </ul>
+                    Delete
+                  </button>
+                </div>
+              ))}
             </div>
           )}
 
@@ -210,31 +213,31 @@ return (
             </a>
           </div>
         </div>
-      )}
-
-      {!showLoginForm && !showSignupForm && !isLoggedIn && (
+      ) : (
         <div>
           <div className="mb-8 text-center">
             <p className="text-black">Hi! Welcome to the Wishlist App</p>
           </div>
           <div className="mb-4 flex justify-center">
-            <a
-              href="#"
-              onClick={handleLoginLinkClick}
-              className={`text-blue-700 font-bold hover:underline ${
-                isLoggingIn ? 'opacity-50 pointer-events-none' : ''
-              }`}
-            >
-              Sign in
-            </a>
+            <Link href="/signin">
+              <div
+                className={`text-blue-700 font-bold hover:underline ${
+                  isLoggingIn ? 'opacity-50 pointer-events-none' : ''
+                }`}
+                onClick={handleLoginLinkClick}
+              >
+                Sign in
+              </div>
+            </Link>
             <span className="mx-2">|</span>
-            <a
-              href="#"
-              onClick={handleSignupLinkClick}
-              className="text-green-700 font-bold hover:underline"
-            >
-              Sign up
-            </a>
+            <Link href="/signup">
+              <div
+                className="text-green-700 font-bold hover:underline"
+                onClick={handleSignupLinkClick}
+              >
+                Sign up
+              </div>
+            </Link>
           </div>
         </div>
       )}
