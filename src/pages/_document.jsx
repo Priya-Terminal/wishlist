@@ -1,4 +1,4 @@
-import Document, { Head, Html, Main, NextScript } from 'next/document';
+import Document, { Head, Html, Main, NextScript } from "next/document";
 
 // Need to create a custom _document because i18n support is not compatible with `next export`.
 class MyDocument extends Document {

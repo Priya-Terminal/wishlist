@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function SignInFormComponent({ onSignIn }) {
+function SignInForm({ onSignIn }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -17,7 +17,8 @@ function SignInFormComponent({ onSignIn }) {
       });
       
       if (response.ok) {
-        onSignIn(); 
+        const { user } = await response.json();
+        onSignIn(user); 
       }
     } catch (error) {
       console.error('Error:', error);
@@ -48,7 +49,7 @@ function SignInFormComponent({ onSignIn }) {
         </div>
         <button
           type="submit"
-          className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600 text-black"
+          className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600"
         >
           Sign In
         </button>
@@ -57,4 +58,4 @@ function SignInFormComponent({ onSignIn }) {
   );
 }
 
-export default SignInFormComponent;
+export default SignInForm;

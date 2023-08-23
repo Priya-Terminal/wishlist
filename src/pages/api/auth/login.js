@@ -19,7 +19,7 @@ export default async (req, res) => {
     }
 
 
-    res.status(200).json({ message: 'Login successful' });
+    res.status(200).json({ user });
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ error: 'Failed to log in' });

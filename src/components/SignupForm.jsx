@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 
-const SignupForm = () => {
+const SignupForm = ({ onSignUp }) => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +13,8 @@ const SignupForm = () => {
   const handleSignUp = async (e) => {
     e.preventDefault();
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(password)) {
       setPasswordError(
         "Password must be at least 8 characters and contain uppercase, lowercase, digit, and special character."
@@ -28,11 +29,12 @@ const SignupForm = () => {
 
     try {
       const response = await fetch("/api/auth/signup", {
-        method: 'POST',
-        body: JSON.stringify({ email, password })
-       });
-      if (response.status >= 200 && response.status < 300) {
-        router.push("/");
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+      if (response.status === 201) {
+        const { user } = await response.json();
+        onSignUp(user);
       }
     } catch (error) {
       setSignupError("An error occurred during signup.");
@@ -43,12 +45,13 @@ const SignupForm = () => {
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-md shadow-md text-black">
       <h2 className="text-2xl font-semibold mb-4">Sign Up</h2>
-      {signupError && (
-        <div className="text-red-500 mb-2">{signupError}</div>
-      )}
+      {signupError && <div className="text-red-500 mb-2">{signupError}</div>}
       <form onSubmit={handleSignUp}>
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium mb-1 text-black">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium mb-1 text-black"
+          >
             Email
           </label>
           <input
@@ -61,7 +64,10 @@ const SignupForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium mb-1 text-black">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium mb-1 text-black"
+          >
             Password
           </label>
           <input
@@ -79,19 +85,24 @@ const SignupForm = () => {
         )}
 
         <div className="mb-4">
-          <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1 text-black">
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium mb-1 text-black"
+          >
             Confirm Password
           </label>
           <input
             type="password"
             id="confirmPassword"
             className={`w-full px-3 py-2 rounded border focus:ring ${
-              password === confirmPassword ? 'focus:ring-blue-300' : 'focus:ring-red-300'
+              password === confirmPassword
+                ? "focus:ring-blue-300"
+                : "focus:ring-red-300"
             } text-black`}
             value={confirmPassword}
             onChange={(e) => {
               setConfirmPassword(e.target.value);
-              setMatchError(''); 
+              setMatchError("");
             }}
             required
           />
@@ -113,4 +124,3 @@ const SignupForm = () => {
 };
 
 export default SignupForm;
-
