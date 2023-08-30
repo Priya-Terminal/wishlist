@@ -11,8 +11,11 @@ const App = () => {
   const router = useRouter();
 
   useEffect(() => {
+    if (!user) {
+      router.push("/");
+    }
     fetchData();
-  }, []);
+  }, [user]);
 
   const fetchData = async () => {
     try {
@@ -89,13 +92,13 @@ const App = () => {
     }
   };
 
-  return (
-    <div>
+  return user ? (
+    <>
       <WishlistForm onSubmit={handleFormSubmit} />
 
       {consolidatedLink && (
         <div className="mt-6 p-4 border rounded-md bg-gray-200">
-          <p className="font-semibold mb-2 text-black">Consolidated Link:</p>
+          <p className="font-semibold mb-2 text-foreground">Consolidated Link:</p>
           <a
             href={consolidatedLink}
             target="_blank"
@@ -109,18 +112,18 @@ const App = () => {
 
       {wishlistItems.length > 0 && (
         <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-4 text-black">
+          <h2 className="text-lg font-semibold mb-4 text-foreground">
             Wishlist Items:
           </h2>
           {wishlistItems.map((item) => (
             <div
               key={item._id}
-              className="flex justify-between text-white items-center mb-2"
+              className="flex justify-between text-foreground items-center mb-2"
             >
               <p>{item.link}</p>
               <button
                 onClick={() => handleDeleteItem(item._id)}
-                className="bg-red-500 text-white py-1 px-2 rounded-md hover:bg-red-600"
+                className="bg-red-500 text-foreground py-1 px-2 rounded-md hover:bg-red-600"
               >
                 Delete
               </button>
@@ -133,13 +136,13 @@ const App = () => {
         <button
           href="#"
           onClick={handleLogoutLinkClick}
-          className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
+          className="bg-red-500 text-foreground py-2 px-4 rounded-md hover:bg-red-600"
         >
           Logout
         </button>
       </div>
-    </div>
-  );
+    </>
+  ) : null;
 };
 
 export default App;

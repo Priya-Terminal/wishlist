@@ -9,19 +9,21 @@ const Home = () => {
 
   useEffect(() => {
     if (user) {
+      console.log({ user });
+      console.log("User is logged in, redirecting to /app");
       router.push("/app");
     }
-  }, []);
+  }, [user]);
 
   return (
-    <div className="min-h-screen flex justify-center items-center">
-      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-4xl font-timesnewRoman mb-6 text-center text-primary text-black">
+    <div className="flex flex-grow justify-center items-center">
+      <div className="m-auto max-w-md p-6 rounded-lg shadow-md">
+        <h1 className="text-4xl font-timesnewRoman mb-6 text-center text-foreground">
           ShareWish
         </h1>
 
         <div className="mb-8 text-center">
-          <p className="text-black">
+          <p className="text-foreground">
             Share your wishlist items with everyone with{" "}
             <b className="underline">ShareWish</b>
           </p>

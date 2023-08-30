@@ -17,7 +17,6 @@ const MyApp = ({ Component, pageProps }) => {
       try {
         const userFromStorage = getUser(window);
         setUser(userFromStorage);
-        router.push("/app");
       } catch (err) {
         console.log(err);
       }

@@ -18,7 +18,8 @@ export default async (req, res) => {
       return res.status(401).json({ error: 'Incorrect username or password' });
     }
 
-
+    delete user.password;
+    delete user.__v;
     res.status(200).json({ user });
   } catch (error) {
     console.error('Error logging in:', error);

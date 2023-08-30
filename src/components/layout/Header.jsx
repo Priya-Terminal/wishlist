@@ -17,11 +17,13 @@ const Header = () => {
     }
   };
 
+  console.log(user);
+
   return (
-    <header className="bg-primary py-4">
+    <header className="py-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/">
-          <div className="text-white text-2xl font-semibold cursor-pointer">
+          <div className="text-primary text-2xl font-semibold cursor-pointer">
             ShareWish
           </div>
         </Link>
@@ -29,7 +31,7 @@ const Header = () => {
           {user ? (
             <button
               onClick={handleLogout}
-              className="text-white hover:underline cursor-pointer"
+              className="text-red hover:underline cursor-pointer"
             >
               Logout
             </button>

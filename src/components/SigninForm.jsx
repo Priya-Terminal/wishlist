@@ -26,14 +26,14 @@ function SignInForm({ onSignIn }) {
   };
   
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-md shadow-md text-black">
-      <h2 className="text-2xl font-semibold mb-4">Sign In</h2>
+    <div className="max-w-md mx-auto p-6 rounded-md shadow-md text-foreground">
+      <h2 className="text-foreground font-semibold mb-4">Sign In</h2>
       <form onSubmit={handleSignIn}>
         <div className="mb-4">
           <input
             type="email"
             placeholder="Email"
-            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-black"
+            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -42,14 +42,14 @@ function SignInForm({ onSignIn }) {
           <input
             type="password"
             placeholder="Password"
-            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-black"
+            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <button
           type="submit"
-          className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600"
+          className="bg-blue-500 text-foreground py-2 px-4 rounded-md hover:bg-blue-600"
         >
           Sign In
         </button>
