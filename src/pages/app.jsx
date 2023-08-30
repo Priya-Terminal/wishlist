@@ -115,7 +115,7 @@ const App = () => {
           {wishlistItems.map((item) => (
             <div
               key={item._id}
-              className="flex justify-between text-black items-center mb-2"
+              className="flex justify-between text-white items-center mb-2"
             >
               <p>{item.link}</p>
               <button

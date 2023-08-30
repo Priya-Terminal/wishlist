@@ -20,6 +20,8 @@ const MyApp = ({ Component, pageProps }) => {
     }
   }, [user]);
 
+  console.log("User and setUser in MyApp:", user, setUser);
+
   return (
     <UserContext.Provider value={[user, setUser]}>
       <Component {...pageProps} />
@@ -28,3 +30,4 @@ const MyApp = ({ Component, pageProps }) => {
 };
 
 export default MyApp;
+
