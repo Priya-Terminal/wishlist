@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
-import "../styles/globals.css";
-import UserContext from "@/contexts/user";
-import { getUser } from "@/utils/user";
 import { useRouter } from "next/router";
+
+import "../styles/globals.css";
+
+import Layout from "@/components/layout/Layout";
+
+import { getUser } from "@/utils/user";
+import UserContext from "@/contexts/user";
 
 const MyApp = ({ Component, pageProps }) => {
   const router = useRouter();
@@ -20,14 +24,13 @@ const MyApp = ({ Component, pageProps }) => {
     }
   }, [user]);
 
-  console.log("User and setUser in MyApp:", user, setUser);
-
   return (
     <UserContext.Provider value={[user, setUser]}>
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </UserContext.Provider>
   );
 };
 
 export default MyApp;
-
