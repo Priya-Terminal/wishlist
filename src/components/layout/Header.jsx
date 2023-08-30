@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router"; // Import the router
 import UserContext from "@/contexts/user";
 import { removeUser } from "@/utils/user"; // Import your removeUser function
-import { useRouter } from "next/router"; // Import the router
 
 const Header = () => {
   const [user] = useContext(UserContext);
