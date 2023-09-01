@@ -33,7 +33,7 @@ function SignInForm({ onSignIn }) {
           <input
             type="email"
             placeholder="Email"
-            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300"
+            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-black"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -42,7 +42,7 @@ function SignInForm({ onSignIn }) {
           <input
             type="password"
             placeholder="Password"
-            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300"
+            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-black"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />

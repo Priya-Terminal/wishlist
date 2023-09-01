@@ -16,7 +16,7 @@ const WishlistForm = ({ onSubmit }) => {
         type="text"
         value={wishlistLinks}
         onChange={(e) => setWishlistLinks(e.target.value)}
-        className="border p-2 rounded-md w-full text-foreground placeholder-black"
+        className="border p-2 rounded-md w-full text-foreground placeholder-black text-black"
         placeholder="Enter Wishlist Link"
       />
       <button

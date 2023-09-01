@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import WishlistForm from "@/components/WishlistForm";
+import WishlistItem from "@/components/WishlistItem";
 import { removeUser } from "@/utils/user";
 import UserContext from "@/contexts/user";
 import { useRouter } from "next/router";
@@ -8,6 +9,7 @@ const App = () => {
   const [user, setUser] = useContext(UserContext);
   const [consolidatedLink, setConsolidatedLink] = useState("");
   const [wishlistItems, setWishlistItems] = useState([]);
+  const [editingItem, setEditingItem] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -62,6 +64,10 @@ const App = () => {
     }
   };
 
+  const handleEditItem = (item) => {
+    setEditingItem(item);
+  };
+
   const handleDeleteItem = async (id) => {
     try {
       const response = await fetch("/api/removeItem", {
@@ -95,10 +101,8 @@ const App = () => {
   return user ? (
     <>
       <WishlistForm onSubmit={handleFormSubmit} />
-
       {consolidatedLink && (
         <div className="mt-6 p-4 border rounded-md bg-gray-200">
-          <p className="font-semibold mb-2 text-foreground">Consolidated Link:</p>
           <a
             href={consolidatedLink}
             target="_blank"
@@ -109,29 +113,48 @@ const App = () => {
           </a>
         </div>
       )}
-
       {wishlistItems.length > 0 && (
         <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-4 text-foreground">
-            Wishlist Items:
-          </h2>
+          <h2 className="text-lg font-semibold mb-4 text-blue-600">Wishlist Items:</h2>
           {wishlistItems.map((item) => (
-            <div
-              key={item._id}
-              className="flex justify-between text-foreground items-center mb-2"
-            >
-              <p>{item.link}</p>
-              <button
-                onClick={() => handleDeleteItem(item._id)}
-                className="bg-red-500 text-foreground py-1 px-2 rounded-md hover:bg-red-600"
-              >
-                Delete
-              </button>
+            <div key={item._id} className="mb-4 p-4 border rounded-md bg-white">
+              <p className="font-semibold mb-2 text-blue-600">Wishlist Link:</p>
+              <p className="text-blue-600">{item.link}</p>
+              <div className="mt-2">
+                <button
+                  onClick={() => handleEditItem(item)}
+                  className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mr-2"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDeleteItem(item._id)}
+                  className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))}
         </div>
       )}
-
+  
+      {editingItem && (
+        <div className="mt-6">
+          <h2 className="text-lg font-semibold mb-4 text-blue-600">Edit Item:</h2>
+          <WishlistForm
+            onSubmit={handleEditSubmit}
+            initialLink={editingItem.link}
+          />
+          <button
+            onClick={handleCancelEdit}
+            className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
+          >
+            Cancel Edit
+          </button>
+        </div>
+      )}
+  
       <div className="mt-4">
         <button
           href="#"
