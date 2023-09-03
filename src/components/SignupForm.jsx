@@ -43,8 +43,8 @@ const SignupForm = ({ onSignUp }) => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 rounded-md shadow-md text-foreground">
-      <h2 className="text-foreground font-semibold mb-4">Sign up</h2>
+    <div className="max-w-md mx-auto p-6 rounded-md shadow-md text-black">
+      <h2 className="text-black font-semibold mb-4">Sign up</h2>
       {signupError && <div className="text-red-500 mb-2">{signupError}</div>}
       <form onSubmit={handleSignUp}>
         <div className="mb-4">
@@ -52,7 +52,7 @@ const SignupForm = ({ onSignUp }) => {
             type="email"
             id="email"
             placeholder="Email"
-            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-foreground text-black"
+            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-black"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -63,7 +63,7 @@ const SignupForm = ({ onSignUp }) => {
             type="password"
             id="password"
             placeholder="Password"
-            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-foreground text-black"
+            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-black"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -83,7 +83,7 @@ const SignupForm = ({ onSignUp }) => {
               password === confirmPassword
                 ? "focus:ring-blue-300"
                 : "focus:ring-red-300"
-            } text-foreground`}
+            }`}
             value={confirmPassword}
             onChange={(e) => {
               setConfirmPassword(e.target.value);
@@ -98,7 +98,7 @@ const SignupForm = ({ onSignUp }) => {
         <div className="flex space-x-2 justify-between items-center">
           <button
             type="submit"
-            className="bg-blue-500 text-foreground py-2 px-4 rounded-md hover:bg-blue-600"
+            className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600"
           >
             Sign Up
           </button>

@@ -1,6 +1,6 @@
 const saveUser = ({ localStorage }, user) => {
   console.log("saveUser", user);
-  localStorage.setItem("user", JSON.stringify(user));
+  localStorage.setItem("user", JSON.stringify(cleanUser(user)));
 };
 
 const getUser = ({ localStorage }) => {
@@ -14,4 +14,15 @@ const removeUser = ({ localStorage }) => {
   localStorage.removeItem("user");
 };
 
-export { saveUser, getUser, removeUser };
+const cleanUser = (user) => {
+  const { password, __v, _id, ...cleanedUser } = user;
+  cleanedUser.id = _id;
+  return cleanedUser;
+};
+
+const saveUserToSession = async (req, user) => {
+  req.session.user = cleanUser(user);
+  await req.session.save();
+};
+
+export { saveUser, getUser, removeUser, saveUserToSession, cleanUser };

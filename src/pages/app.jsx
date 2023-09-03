@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { useSession, signOut } from 'next-auth/react';
 import WishlistForm from "@/components/WishlistForm";
 import WishlistItem from "@/components/WishlistItem";
 import { removeUser } from "@/utils/user";
@@ -11,7 +10,6 @@ const App = () => {
   const [consolidatedLink, setConsolidatedLink] = useState("");
   const [wishlistItems, setWishlistItems] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
-  const [session] = useSession();
 
   const router = useRouter();
 
@@ -43,32 +41,27 @@ const App = () => {
   };
 
   const handleFormSubmit = async (wishlistLink) => {
-    if (session) {
-      try {
-        const response = await fetch("/api/addItem", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ link: wishlistLink, userId: session.user.id }), // Include userId from session
-        });
+    try {
+      const response = await fetch("/api/addItem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ link: wishlistLink }),
+      });
 
-        if (response.ok) {
-          const newItem = await response.json();
-          const updatedWishlistItems = [...wishlistItems, newItem];
-          setWishlistItems(updatedWishlistItems);
+      if (response.ok) {
+        const newItem = await response.json();
+        const updatedWishlistItems = [...wishlistItems, newItem];
+        setWishlistItems(updatedWishlistItems);
 
-          const consolidatedLink = generateConsolidatedLink(updatedWishlistItems);
-          setConsolidatedLink(consolidatedLink);
-        } else {
-          console.error("Failed to add wishlist items");
-        }
-      } catch (error) {
-        console.error("Error:", error);
+        const consolidatedLink = generateConsolidatedLink(updatedWishlistItems);
+        setConsolidatedLink(consolidatedLink);
+      } else {
+        console.error("Failed to add wishlist items");
       }
-    } else {
-      console.log("user is not autenticated")
-      router.push("/login"); 
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
 
@@ -123,7 +116,9 @@ const App = () => {
       )}
       {wishlistItems.length > 0 && (
         <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-4 text-blue-600">Wishlist Items:</h2>
+          <h2 className="text-lg font-semibold mb-4 text-blue-600">
+            Wishlist Items:
+          </h2>
           {wishlistItems.map((item) => (
             <div key={item._id} className="mb-4 p-4 border rounded-md bg-white">
               <p className="font-semibold mb-2 text-blue-600">Wishlist Link:</p>
@@ -146,10 +141,12 @@ const App = () => {
           ))}
         </div>
       )}
-  
+
       {editingItem && (
         <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-4 text-blue-600">Edit Item:</h2>
+          <h2 className="text-lg font-semibold mb-4 text-blue-600">
+            Edit Item:
+          </h2>
           <WishlistForm
             onSubmit={handleEditSubmit}
             initialLink={editingItem.link}
@@ -162,7 +159,7 @@ const App = () => {
           </button>
         </div>
       )}
-  
+
       <div className="mt-4">
         <button
           href="#"

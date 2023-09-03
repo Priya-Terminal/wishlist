@@ -1,8 +1,13 @@
-import { getDatabase } from '@/models';
-import User from '@/models/user';
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
+import { withIronSessionApiRoute } from "iron-session/next";
+import { createGetIronSession, getIronSession } from "iron-session";
 
-export default async (req, res) => {
+import { sessionOptions } from "@/lib/session";
+import { getDatabase } from "@/models";
+import User from "@/models/user";
+import { cleanUser, saveUserToSession } from "@/utils/user";
+
+const signUp = async (req, res) => {
   try {
     await getDatabase();
 
@@ -10,14 +15,15 @@ export default async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(403).json({ error: 'User already exists' });
+      return res.status(403).json({ error: "User already exists" });
     }
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
     if (!password.match(passwordRegex)) {
       return res.status(400).json({
         error:
-          'Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, digit, and special character',
+          "Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, digit, and special character",
       });
     }
 
@@ -28,12 +34,14 @@ export default async (req, res) => {
       password: hashedPassword,
     });
 
+    
     await newUser.save();
-
-    console.log('User saved successfully');
-    res.status(201).json({ user: newUser });
+    await saveUserToSession(req, newUser);
+    res.status(201).json({ user: cleanUser(newUser) });
   } catch (error) {
-    console.error('Error signing up:', error);
-    res.status(500).json({ error: 'Failed to sign up' });
+    console.error("Error signing up:", error);
+    res.status(500).json({ error: "Failed to sign up" });
   }
 };
+
+export default withIronSessionApiRoute(signUp, sessionOptions);

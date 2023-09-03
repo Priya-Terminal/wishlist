@@ -1,12 +1,14 @@
-import { getDatabase, WishlistItem } from '@/models';
-import { getSession } from 'next-auth/client';
+import { withIronSessionApiRoute } from "iron-session/next";
 
-export default async (req, res) => {
+import { sessionOptions } from "@/lib/session";
+import { getDatabase, WishlistItem } from '@/models';
+
+const addItem = async (req, res) => {
   try {
 
     await getDatabase();
 
-    const session = await getSession({ req });
+    const session = req.session;
 
     if (!session) {
       return res.status(401).json({ error: 'Not authenticated' });
@@ -34,3 +36,5 @@ export default async (req, res) => {
     res.status(500).json({ error: 'Failed to add item' });
   }
 };
+
+export default withIronSessionApiRoute(addItem, sessionOptions);

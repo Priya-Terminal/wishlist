@@ -1,28 +1,32 @@
-import { getDatabase } from '@/models';
-import User from '@/models/user';
-import bcrypt from 'bcryptjs';
+import { withIronSessionApiRoute } from "iron-session/next";
 
-export default async (req, res) => {
+import { sessionOptions } from "@/lib/session";
+import { getDatabase } from "@/models";
+import User from "@/models/user";
+import bcrypt from "bcryptjs";
+import { cleanUser, saveUserToSession } from "@/utils/user";
+
+const loginRouter = async (req, res) => {
   try {
-
     await getDatabase();
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ error: 'Incorrect username or password' });
+      return res.status(401).json({ error: "Incorrect username or password" });
     }
 
-    delete user.password;
-    delete user.__v;
-    res.status(200).json({ user });
+    await saveUserToSession(req, user);
+    res.status(200).json({ user: cleanUser(user) });
   } catch (error) {
-    console.error('Error logging in:', error);
-    res.status(500).json({ error: 'Failed to log in' });
+    console.error("Error logging in:", error);
+    res.status(500).json({ error: "Failed to log in" });
   }
 };
+
+export default withIronSessionApiRoute(loginRouter, sessionOptions);

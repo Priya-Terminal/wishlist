@@ -19,7 +19,7 @@ function SignInPage() {
     router.push("/app");
   };
 
-  return (
+  return !user && (
     <div className="flex items-center justify-center h-screen">
       <div>
         <h1 className="text-3xl font-semibold mb-4">Sign In</h1>

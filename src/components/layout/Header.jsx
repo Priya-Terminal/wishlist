@@ -17,8 +17,6 @@ const Header = () => {
     }
   };
 
-  console.log(user);
-
   return (
     <header className="py-4">
       <div className="container mx-auto flex justify-between items-center">
