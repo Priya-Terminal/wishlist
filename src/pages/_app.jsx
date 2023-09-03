@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { SessionProvider, useSession } from 'next-auth/react';
 
 import "../styles/globals.css";
 
@@ -11,9 +12,10 @@ import UserContext from "@/contexts/user";
 const MyApp = ({ Component, pageProps }) => {
   const router = useRouter();
   const [user, setUser] = useState(null);
+  const [ session ] = useSession();
 
   useEffect(() => {
-    if (!user) {
+    if (!user && session) {
       try {
         const userFromStorage = getUser(window);
         setUser(userFromStorage);
@@ -21,14 +23,18 @@ const MyApp = ({ Component, pageProps }) => {
         console.log(err);
       }
     }
-  }, [user]);
+  }, [user, session]);
+
+  console.log("pageProps.session:", pageProps.session);
 
   return (
-    <UserContext.Provider value={[user, setUser]}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </UserContext.Provider>
+    <SessionProvider session={pageProps.session}> 
+      <UserContext.Provider value={[user, setUser]}>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </UserContext.Provider>
+    </SessionProvider> 
   );
 };
 

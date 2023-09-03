@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { useSession, signOut } from 'next-auth/react';
 import WishlistForm from "@/components/WishlistForm";
 import WishlistItem from "@/components/WishlistItem";
 import { removeUser } from "@/utils/user";
@@ -10,6 +11,8 @@ const App = () => {
   const [consolidatedLink, setConsolidatedLink] = useState("");
   const [wishlistItems, setWishlistItems] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
+  const [session] = useSession();
+
   const router = useRouter();
 
   useEffect(() => {
@@ -40,27 +43,32 @@ const App = () => {
   };
 
   const handleFormSubmit = async (wishlistLink) => {
-    try {
-      const response = await fetch("/api/addItem", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ link: wishlistLink }),
-      });
+    if (session) {
+      try {
+        const response = await fetch("/api/addItem", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ link: wishlistLink, userId: session.user.id }), // Include userId from session
+        });
 
-      if (response.ok) {
-        const newItem = await response.json();
-        const updatedWishlistItems = [...wishlistItems, newItem];
-        setWishlistItems(updatedWishlistItems);
+        if (response.ok) {
+          const newItem = await response.json();
+          const updatedWishlistItems = [...wishlistItems, newItem];
+          setWishlistItems(updatedWishlistItems);
 
-        const consolidatedLink = generateConsolidatedLink(updatedWishlistItems);
-        setConsolidatedLink(consolidatedLink);
-      } else {
-        console.error("Failed to add wishlist items");
+          const consolidatedLink = generateConsolidatedLink(updatedWishlistItems);
+          setConsolidatedLink(consolidatedLink);
+        } else {
+          console.error("Failed to add wishlist items");
+        }
+      } catch (error) {
+        console.error("Error:", error);
       }
-    } catch (error) {
-      console.error("Error:", error);
+    } else {
+      console.log("user is not autenticated")
+      router.push("/login"); 
     }
   };
 
