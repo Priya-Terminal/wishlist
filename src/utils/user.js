@@ -16,7 +16,9 @@ const removeUser = ({ localStorage }) => {
 
 const cleanUser = (user) => {
   const { password, __v, _id, ...cleanedUser } = user;
-  cleanedUser.id = _id;
+  if (_id && !cleanedUser.id) {
+    cleanedUser.id = _id;
+  }
   return cleanedUser;
 };
 

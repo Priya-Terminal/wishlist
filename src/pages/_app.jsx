@@ -11,8 +11,10 @@ const MyApp = ({ Component, pageProps }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const userFromStorage = getUser(window);
-    if (!user && userFromStorage) setUser(userFromStorage);
+    if (!user) {
+      const userFromStorage = getUser(window);
+      setUser(userFromStorage);
+    }
   }, [user]);
 
   return (

@@ -1,15 +1,25 @@
-import { useContext, useEffect, useState } from "react";
-import WishlistForm from "@/components/WishlistForm";
-import WishlistItem from "@/components/WishlistItem";
-import { removeUser } from "@/utils/user";
-import UserContext from "@/contexts/user";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { withIronSessionSsr } from "iron-session/next";
+import Link from "next/link";
 
-const App = () => {
-  const [user, setUser] = useContext(UserContext);
-  const [consolidatedLink, setConsolidatedLink] = useState("");
+import { sessionOptions } from "@/lib/session";
+
+import WishlistForm from "@/components/WishlistForm";
+
+export const getServerSideProps = withIronSessionSsr(async (context) => {
+  const { user } = context.req.session;
+
+  return {
+    props: {
+      user,
+    },
+  };
+}, sessionOptions);
+
+const App = ({ user }) => {
   const [wishlistItems, setWishlistItems] = useState([]);
-  const [editingItem, setEditingItem] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   const router = useRouter();
 
@@ -22,7 +32,7 @@ const App = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("/api/getItems");
+      const response = await fetch("/api/item");
       if (response.ok) {
         const items = await response.json();
         setWishlistItems(items);
@@ -34,15 +44,18 @@ const App = () => {
     }
   };
 
-  const generateConsolidatedLink = (items) => {
-    const links = items.map((item) => item.link);
-    const consolidatedLink = links.join(", ");
-    return consolidatedLink;
+  const handleCopyUrl = () => {
+    const url = `${window.location.origin}/sharing/${user.id}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
   };
 
   const handleFormSubmit = async (wishlistLink) => {
     try {
-      const response = await fetch("/api/addItem", {
+      const response = await fetch("/api/item", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,9 +67,6 @@ const App = () => {
         const newItem = await response.json();
         const updatedWishlistItems = [...wishlistItems, newItem];
         setWishlistItems(updatedWishlistItems);
-
-        const consolidatedLink = generateConsolidatedLink(updatedWishlistItems);
-        setConsolidatedLink(consolidatedLink);
       } else {
         console.error("Failed to add wishlist items");
       }
@@ -65,13 +75,9 @@ const App = () => {
     }
   };
 
-  const handleEditItem = (item) => {
-    setEditingItem(item);
-  };
-
   const handleDeleteItem = async (id) => {
     try {
-      const response = await fetch("/api/removeItem", {
+      const response = await fetch("/api/item", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -92,63 +98,56 @@ const App = () => {
   return user ? (
     <>
       <WishlistForm onSubmit={handleFormSubmit} />
-      {consolidatedLink && (
-        <div className="mt-6 p-4 border rounded-md bg-gray-200">
-          <a
-            href={consolidatedLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            {consolidatedLink}
-          </a>
-        </div>
-      )}
-      {wishlistItems.length > 0 && (
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-4 text-blue-600">
-            Wishlist Items:
-          </h2>
-          {wishlistItems.map((item) => (
-            <div key={item._id} className="mb-4 p-4 border rounded-md bg-white">
-              <p className="font-semibold mb-2 text-blue-600">Wishlist Link:</p>
-              <p className="text-blue-600">{item.link}</p>
-              <div className="mt-2">
-                <button
-                  onClick={() => handleEditItem(item)}
-                  className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mr-2"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteItem(item._id)}
-                  className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
 
-      {editingItem && (
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-4 text-blue-600">
-            Edit Item:
-          </h2>
-          <WishlistForm
-            onSubmit={handleEditSubmit}
-            initialLink={editingItem.link}
-          />
-          <button
-            onClick={handleCancelEdit}
-            className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
-          >
-            Cancel Edit
-          </button>
-        </div>
-      )}
+      <div className="m-4">
+        {wishlistItems.length > 0 ? (
+          <>
+            <h2 className="text-lg font-semibold mb-4 text-blue-600">
+              Wishlist Items:
+            </h2>
+            <button
+              disabled={copied}
+              type="button"
+              onClick={handleCopyUrl}
+              className="mb-4 bg-blue-500 text-white py-2 px-4 rounded-md disabled:bg-green-600 hover:bg-blue-600"
+            >
+              {copied ? "Copied!" : "Copy Sharing URL"}
+            </button>
+            {wishlistItems.map((item) => (
+              <div
+                key={item._id}
+                className="mb-4 p-4 border rounded-md bg-white"
+              >
+                <p className="font-semibold mb-2 text-blue-600">Item Link:</p>
+                <Link
+                  href={item.link}
+                  className="text-blue-600 hover:underline"
+                >
+                  {item.link}
+                </Link>
+                <div className="mt-2">
+                  <button
+                    onClick={() => handleEditItem(item)}
+                    className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mr-2"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteItem(item._id)}
+                    className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </>
+        ) : (
+          <p className="font-bold text-foreground">
+            No wishlist items found. Try adding some!
+          </p>
+        )}
+      </div>
     </>
   ) : null;
 };
