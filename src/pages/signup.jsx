@@ -13,7 +13,7 @@ const SignupPage = () => {
     if (user) {
       router.push("/app");
     }
-  }, []);
+  }, [user]);
 
   const handleSuccessfulSignup = (user) => {
     saveUser(window, user);

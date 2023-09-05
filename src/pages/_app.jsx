@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 
 import "../styles/globals.css";
 
@@ -9,7 +8,6 @@ import { getUser } from "@/utils/user";
 import UserContext from "@/contexts/user";
 
 const MyApp = ({ Component, pageProps }) => {
-  const router = useRouter();
   const [user, setUser] = useState(null);
 
   useEffect(() => {

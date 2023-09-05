@@ -1,19 +1,40 @@
-import React, { useEffect, useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import UserContext from "@/contexts/user";
+
+const SignUpSignInSection = () => (
+  <div className="mb-4 flex justify-center">
+    <Link href="/signin">
+      <div className="text-blue-700 font-bold opacity-60 hover:opacity-100 p-2 rounded-lg border-2 border-blue-700">
+        Sign in
+      </div>
+    </Link>
+    <span className="mx-2">|</span>
+    <Link href="/signup">
+      <div className="text-green-700 font-bold opacity-60 hover:opacity-100 p-2 rounded-lg border-2 border-green-700">
+        Sign up
+      </div>
+    </Link>
+  </div>
+);
+
+const GoToAppSection = ({ user }) => (
+  <div className="mt-4 flex justify-center">
+    <p className="text-foreground">
+      Hello <b>{user.email}</b>, view and manage your wish list items{" "}
+      <Link
+        className="text-blue-700 font-bold opacity-60 hove:underline hover:opacity-100 border-b-blue-700"
+        href="/app"
+      >
+        here
+      </Link>
+      .
+    </p>
+  </div>
+);
 
 const Home = () => {
   const [user] = useContext(UserContext);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (user) {
-      console.log({ user });
-      console.log("User is logged in, redirecting to /app");
-      router.push("/app");
-    }
-  }, [user]);
 
   return (
     <div className="flex flex-grow justify-center items-center">
@@ -27,19 +48,7 @@ const Home = () => {
             Share your wishlist items with everyone with{" "}
             <b className="underline">ShareWish</b>
           </p>
-        </div>
-        <div className="mb-4 flex justify-center">
-          <Link href="/signin">
-            <div className="text-blue-700 font-bold opacity-60 hover:opacity-100 p-2 rounded-lg border-2 border-blue-700">
-              Sign in
-            </div>
-          </Link>
-          <span className="mx-2">|</span>
-          <Link href="/signup">
-            <div className="text-green-700 font-bold opacity-60 hover:opacity-100 p-2 rounded-lg border-2 border-green-700">
-              Sign up
-            </div>
-          </Link>
+          {user ? <GoToAppSection user={user} /> : <SignUpSignInSection />}
         </div>
       </div>
     </div>

@@ -10,7 +10,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      removeUser();
+      removeUser(window);
       router.push("/");
     } catch (error) {
       console.error("Error:", error);
@@ -29,7 +29,7 @@ const Header = () => {
           {user ? (
             <button
               onClick={handleLogout}
-              className="text-red hover:underline cursor-pointer"
+              className="bg-red-500 text-foreground py-2 px-4 rounded-md hover:bg-red-600"
             >
               Logout
             </button>

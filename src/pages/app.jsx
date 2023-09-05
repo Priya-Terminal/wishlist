@@ -159,16 +159,6 @@ const App = () => {
           </button>
         </div>
       )}
-
-      <div className="mt-4">
-        <button
-          href="#"
-          onClick={handleLogoutLinkClick}
-          className="bg-red-500 text-foreground py-2 px-4 rounded-md hover:bg-red-600"
-        >
-          Logout
-        </button>
-      </div>
     </>
   ) : null;
 };

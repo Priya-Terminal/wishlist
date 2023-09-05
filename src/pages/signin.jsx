@@ -12,7 +12,7 @@ function SignInPage() {
     if (user) {
       router.push("/app");
     }
-  }, []);
+  }, [user]);
 
   const handleSuccessfulLogin = (loggedInUser) => {
     saveUser(window, loggedInUser);
