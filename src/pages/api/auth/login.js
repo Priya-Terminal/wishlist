@@ -11,7 +11,7 @@ const loginRouter = async (req, res) => {
     await getDatabase();
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const { _doc: user } = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }

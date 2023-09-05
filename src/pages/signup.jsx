@@ -7,7 +7,7 @@ import UserContext from "@/contexts/user";
 
 const SignupPage = () => {
   const router = useRouter();
-  const [user] = useContext(UserContext);
+  const [user, setUser] = useContext(UserContext);
 
   useEffect(() => {
     if (user) {
@@ -17,9 +17,8 @@ const SignupPage = () => {
 
   const handleSuccessfulSignup = (user) => {
     saveUser(window, user);
+    setUser(user);
     router.push("/app");
-
-    alert("Sign-up successful. You can now sign in.");
   };
 
   return !user && (

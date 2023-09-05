@@ -89,16 +89,6 @@ const App = () => {
     }
   };
 
-  const handleLogoutLinkClick = async () => {
-    try {
-      removeUser(window);
-      setUser(null);
-      router.push("/");
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
   return user ? (
     <>
       <WishlistForm onSubmit={handleFormSubmit} />

@@ -1,16 +1,19 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router"; // Import the router
 import UserContext from "@/contexts/user";
 import { removeUser } from "@/utils/user"; // Import your removeUser function
 
 const Header = () => {
-  const [user] = useContext(UserContext);
+  const [user, setUser] = useContext(UserContext);
   const router = useRouter();
+
+  useEffect(() => {}, [user]);
 
   const handleLogout = async () => {
     try {
       removeUser(window);
+      setUser(null);
       router.push("/");
     } catch (error) {
       console.error("Error:", error);

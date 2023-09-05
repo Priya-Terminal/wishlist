@@ -36,6 +36,8 @@ const GoToAppSection = ({ user }) => (
 const Home = () => {
   const [user] = useContext(UserContext);
 
+  useEffect(() => {}, [user]);
+
   return (
     <div className="flex flex-grow justify-center items-center">
       <div className="m-auto max-w-md p-6 rounded-lg shadow-md">

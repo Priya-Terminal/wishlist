@@ -5,7 +5,7 @@ import { saveUser } from "@/utils/user";
 import UserContext from "@/contexts/user";
 
 function SignInPage() {
-  const [user] = useContext(UserContext)
+  const [user, setUser] = useContext(UserContext)
   const router = useRouter();
 
   useEffect(() => {
@@ -16,9 +16,8 @@ function SignInPage() {
 
   const handleSuccessfulLogin = (loggedInUser) => {
     saveUser(window, loggedInUser);
-    router.push("/app");
-
-    alert('Sign-in successful');
+    setUser(loggedInUser);
+    router.reload();
   };
 
   const handleFailedLogin = () => {
@@ -29,7 +28,7 @@ function SignInPage() {
     <div className="flex items-center justify-center h-screen">
       <div>
         <h1 className="text-3xl font-semibold mb-4">Sign In</h1>
-        <SignInForm onSignIn={ (user) => {
+        <SignInForm onSignIn={(user) => {
           if (user) {
             handleSuccessfulLogin(user);
           } else {
