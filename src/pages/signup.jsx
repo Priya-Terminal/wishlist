@@ -18,6 +18,8 @@ const SignupPage = () => {
   const handleSuccessfulSignup = (user) => {
     saveUser(window, user);
     router.push("/app");
+
+    alert("Sign-up successful. You can now sign in.");
   };
 
   return !user && (

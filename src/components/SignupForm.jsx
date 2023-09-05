@@ -10,11 +10,12 @@ const SignupForm = ({ onSignUp }) => {
   const [matchError, setMatchError] = useState("");
   const [signupError, setSignupError] = useState("");
 
+  const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
   const handleSignUp = async (e) => {
     e.preventDefault();
 
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(password)) {
       setPasswordError(
         "Password must be at least 8 characters and contain uppercase, lowercase, digit, and special character."
@@ -25,6 +26,8 @@ const SignupForm = ({ onSignUp }) => {
     if (password !== confirmPassword) {
       setMatchError("Passwords do not match.");
       return;
+    } else {
+      setMatchError('');
     }
 
     try {
@@ -35,6 +38,9 @@ const SignupForm = ({ onSignUp }) => {
       if (response.status === 201) {
         const { user } = await response.json();
         onSignUp(user);
+      } else {
+        const {error} = await response.json();
+        setSignupError(`An error occured during signup: ${error}`);
       }
     } catch (error) {
       setSignupError("An error occurred during signup.");
@@ -65,7 +71,12 @@ const SignupForm = ({ onSignUp }) => {
             placeholder="Password"
             className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-black"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+               setPassword(e.target.value);
+               if (e.target.value.match(passwordRegex)) {
+                 setPasswordError('');
+                }
+            }}
             required
           />
         </div>

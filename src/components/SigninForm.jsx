@@ -19,9 +19,13 @@ function SignInForm({ onSignIn }) {
       if (response.ok) {
         const { user } = await response.json();
         onSignIn(user); 
+      } else {
+        const { error } = await response.json();
+        alert(`Sign-in failed: ${error}`);
       }
     } catch (error) {
       console.error('Error:', error);
+      alert("An error occurred during sign-in");
     }
   };
   
