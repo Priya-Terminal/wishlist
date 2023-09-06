@@ -3,7 +3,7 @@ import Link from "next/link";
 import UserContext from "@/contexts/user";
 
 const SignUpSignInSection = () => (
-  <div className="mb-4 flex justify-center">
+  <div className="mb-8 flex justify-center">
     <Link href="/signin">
       <div className="text-blue-700 font-bold opacity-60 hover:opacity-100 p-2 rounded-lg border-2 border-blue-700">
         Sign in
@@ -23,7 +23,7 @@ const GoToAppSection = ({ user }) => (
     <p className="text-foreground">
       Hello <b>{user.email}</b>, view and manage your wish list items{" "}
       <Link
-        className="text-blue-700 font-bold opacity-60 hove:underline hover:opacity-100 border-b-blue-700"
+        className="text-blue-700 font-bold opacity-70 hove:underline hover:opacity-100 border-b-blue-700"
         href="/app"
       >
         here
@@ -39,14 +39,14 @@ const Home = () => {
   useEffect(() => {}, [user]);
 
   return (
-    <div className="flex flex-grow justify-center items-center">
-      <div className="m-auto max-w-md p-6 rounded-lg shadow-md">
-        <h1 className="text-4xl font-timesnewRoman mb-6 text-center text-foreground">
+    <div className="flex flex-grow justify-center items-center h-screen bg-zinc-200">
+      <div className="m-auto max-w-md p-6 rounded-lg shadow-md bg-slate-200">
+        <h1 className="text-4xl font-bold mb-6 text-center text-black">
           ShareWish
         </h1>
 
         <div className="mb-8 text-center">
-          <p className="text-foreground">
+          <p className="text-black">
             Share your wishlist items with everyone with{" "}
             <b className="underline">ShareWish</b>
           </p>

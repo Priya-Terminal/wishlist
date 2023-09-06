@@ -21,11 +21,11 @@ const Header = () => {
   };
 
   return (
-    <header className="py-4">
-      <div className="container mx-auto flex justify-between items-center">
+    <header className="py-4 bg-zinc-300">
+      <div className="container mx-auto flex justify-between items-center bg-zinc-300">
         <Link href="/">
           <div className="text-primary text-2xl font-semibold cursor-pointer">
-            ShareWish
+            <span style={{ color: "black" }}>ShareWish</span>
           </div>
         </Link>
         <nav>
