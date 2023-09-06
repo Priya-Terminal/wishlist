@@ -9,9 +9,10 @@ const SignupForm = ({ onSignUp }) => {
   const [passwordError, setPasswordError] = useState("");
   const [matchError, setMatchError] = useState("");
   const [signupError, setSignupError] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
 
   const passwordRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -27,7 +28,7 @@ const SignupForm = ({ onSignUp }) => {
       setMatchError("Passwords do not match.");
       return;
     } else {
-      setMatchError('');
+      setMatchError("");
     }
 
     try {
@@ -39,8 +40,8 @@ const SignupForm = ({ onSignUp }) => {
         const { user } = await response.json();
         onSignUp(user);
       } else {
-        const {error} = await response.json();
-        setSignupError(`An error occured during signup: ${error}`);
+        const { error } = await response.json();
+        setSignupError(`An error occurred during signup: ${error}`);
       }
     } catch (error) {
       setSignupError("An error occurred during signup.");
@@ -49,16 +50,25 @@ const SignupForm = ({ onSignUp }) => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 rounded-md shadow-md text-black">
-      <h2 className="text-black font-semibold mb-4">Sign up</h2>
-      {signupError && <div className="text-red-500 mb-2">{signupError}</div>}
+    <div
+      className={`max-w-md mx-auto p-6 rounded-md shadow-md ${
+        darkMode ? "bg-gray-800 text-gray-300" : "bg-white text-black"
+      }`}
+    >
+      {signupError && (
+        <div className="text-red-500 mb-2">{signupError}</div>
+      )}
       <form onSubmit={handleSignUp}>
         <div className="mb-4">
           <input
             type="email"
             id="email"
             placeholder="Email"
-            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-black"
+            className={`w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 ${
+              darkMode
+                ? "dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
+                : "text-black"
+            }`}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -69,13 +79,17 @@ const SignupForm = ({ onSignUp }) => {
             type="password"
             id="password"
             placeholder="Password"
-            className="w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 text-black"
+            className={`w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 ${
+              darkMode
+                ? "dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
+                : "text-black"
+            }`}
             value={password}
             onChange={(e) => {
-               setPassword(e.target.value);
-               if (e.target.value.match(passwordRegex)) {
-                 setPasswordError('');
-                }
+              setPassword(e.target.value);
+              if (e.target.value.match(passwordRegex)) {
+                setPasswordError("");
+              }
             }}
             required
           />
@@ -89,8 +103,12 @@ const SignupForm = ({ onSignUp }) => {
           <input
             type="password"
             id="confirmPassword"
-            placeholder="Confrim Password"
-            className={`w-full px-3 py-2 rounded border focus:ring text-black ${
+            placeholder="Confirm Password"
+            className={`w-full px-3 py-2 rounded border focus:ring ${
+              darkMode
+                ? "dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
+                : "text-black"
+            } ${
               password === confirmPassword
                 ? "focus:ring-blue-300"
                 : "focus:ring-red-300"
@@ -109,14 +127,32 @@ const SignupForm = ({ onSignUp }) => {
         <div className="flex space-x-2 justify-between items-center">
           <button
             type="submit"
-            className="bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600"
+            className={`bg-blue-500 text-black py-2 px-4 rounded-md hover:bg-blue-600 ${
+              darkMode ? "bg-blue-700 text-white" : "bg-blue-500 text-foreground"
+            }`}
           >
             Sign Up
           </button>
         </div>
       </form>
+      <div className="mt-4">
+        <label
+          className={`inline-flex items-center cursor-pointer ${
+            darkMode ? "text-gray-400" : "text-black"
+          }`}
+        >
+          <span className="mr-2">Dark Mode</span>
+          <input
+            type="checkbox"
+            className="form-checkbox h-5 w-5 text-blue-500 transition duration-150 ease-in-out"
+            checked={darkMode}
+            onChange={() => setDarkMode(!darkMode)}
+          />
+        </label>
+      </div>
     </div>
   );
 };
 
 export default SignupForm;
+
