@@ -30,12 +30,17 @@ const Header = () => {
         </Link>
         <nav>
           {user ? (
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 text-foreground py-2 px-4 rounded-md hover:bg-red-600"
-            >
-              Logout
-            </button>
+            <>
+              <Link href="/myprofile">
+                <span className="font-semibold text-black mr-4">My Profile</span>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 text-foreground py-2 px-4 rounded-md hover:bg-red-600"
+              >
+                Logout
+              </button>
+            </>
           ) : null}
         </nav>
       </div>
