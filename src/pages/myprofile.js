@@ -1,5 +1,4 @@
-// pages/myprofile.js
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { withIronSessionSsr } from "iron-session/next";
 import { sessionOptions } from "@/lib/session";
 import Profile from "@/components/Profile";
@@ -15,11 +14,16 @@ export const getServerSideProps = withIronSessionSsr(async (context) => {
 }, sessionOptions);
 
 const MyProfilePage = ({ user }) => {
-  // You can fetch user data if needed or simply pass it from props
+  const [currentUser, setCurrentUser] = useState(user);
+
+  const updateUser = (updatedUser) => {
+    console.log("updateUser function called with data:", updatedUser);
+    setCurrentUser(updatedUser);
+  };
 
   return (
     <div className="m-4">
-      <Profile user={user} />
+      <Profile user={currentUser} updateUser={updateUser} />
     </div>
   );
 };
