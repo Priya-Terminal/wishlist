@@ -20,6 +20,8 @@ export const getServerSideProps = withIronSessionSsr(async (context) => {
 const App = ({ user }) => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [copied, setCopied] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [newLink, setNewLink] = useState("");
 
   const router = useRouter();
 
@@ -68,7 +70,36 @@ const App = ({ user }) => {
         const updatedWishlistItems = [...wishlistItems, newItem];
         setWishlistItems(updatedWishlistItems);
       } else {
-        console.error("Failed to add wishlist items");
+        console.error("Failed to add wishlist item");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleEditItem = (item) => {
+    setEditingItem(item);
+    setNewLink(item.link);
+  };
+
+  const handleSaveItem = async (id, newLink) => {
+    try {
+      const response = await fetch("/api/item", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, link: newLink }),
+      });
+
+      if (response.ok) {
+        const updatedItems = wishlistItems.map((item) =>
+          item._id === id ? { ...item, link: newLink } : item
+        );
+        setWishlistItems(updatedItems);
+        setEditingItem(null);
+      } else {
+        console.error("Failed to update wishlist item");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -125,16 +156,36 @@ const App = ({ user }) => {
               >
                 <p className="font-semibold mb-2 text-blue-600">Item Link:</p>
                 <div className="overflow-x-auto">
-                  <Link href={item.link} className="text-blue-600 hover:underline">
-                    {item.link}
-                  </Link>
+                  {editingItem === item ? (
+                    <input
+                      type="text"
+                      value={newLink}
+                      onChange={(e) => setNewLink(e.target.value)}
+                      className="border rounded-md p-2"
+                    />
+                  ) : (
+                    <Link
+                      href={item.link}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {item.link}
+                    </Link>
+                  )}
                 </div>
                 <div className="mt-2">
                   <button
-                    onClick={() => handleEditItem(item)}
-                    className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mr-2"
+                    onClick={() => {
+                      if (editingItem === item) {
+                        handleSaveItem(item._id, newLink);
+                      } else {
+                        handleEditItem(item);
+                      }
+                    }}
+                    className={`bg-blue-500 text-white py-2 px-4 rounded-md ${
+                      editingItem === item ? "hover:bg-green-600" : "hover:bg-blue-600"
+                    }`}
                   >
-                    Edit
+                    {editingItem === item ? "Save" : "Edit"}
                   </button>
                   <button
                     onClick={() => handleDeleteItem(item._id)}
@@ -154,6 +205,6 @@ const App = ({ user }) => {
       </div>
     </div>
   ) : null;
-}
+};
 
 export default App;

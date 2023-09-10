@@ -39,10 +39,36 @@ const addItem = async (req, res) => {
   }
 };
 
+const updateItem = async (req, res) => {
+  if (req.method === "PUT") {
+    const { id, link } = req.body;
+
+    try {
+      await getDatabase();
+      const objectId = new ObjectId(id);
+
+      const result = await WishlistItem.updateOne(
+        { _id: objectId },
+        { $set: { link } }
+      );
+
+      if (result.modifiedCount > 0) {
+        res.status(200).json({ message: "Item updated successfully" });
+      } else {
+        console.log("Item not found for update");
+        res.status(404).json({ error: "Item not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update item" });
+    }
+  } else {
+    res.status(405).json({ error: "Method not allowed" });
+  }
+};
+
 const removeItem = async (req, res) => {
   if (req.method === "DELETE") {
     const itemId = req.body.id;
-    console.log("Deleting item with ID:", itemId);
 
     try {
       await getDatabase();
@@ -88,6 +114,7 @@ const getItems = async (req, res) => {
 
 router.get(withIronSessionApiRoute(getItems, sessionOptions));
 router.post(withIronSessionApiRoute(addItem, sessionOptions));
+router.put(withIronSessionApiRoute(updateItem, sessionOptions));
 router.delete(withIronSessionApiRoute(removeItem, sessionOptions));
 
 export default router.handler();
