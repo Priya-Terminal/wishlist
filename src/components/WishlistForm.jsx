@@ -10,7 +10,7 @@ const WishlistForm = ({ onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="m-4">
+    <form onSubmit={handleSubmit} className="flex-grow p-4 bg-white">
       <label className="block text-foreground font-semibold mb-2">
         Add Wishlist Link:
       </label>

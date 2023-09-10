@@ -96,35 +96,39 @@ const App = ({ user }) => {
   };
 
   return user ? (
-    <>
-      <WishlistForm onSubmit={handleFormSubmit} />
-
-      <div className="m-4">
+    <div className="flex-grow p-4 overflow-y-auto">
+      <div className="flex-none bg-white text-black p-4">
+        <WishlistForm onSubmit={handleFormSubmit} />
+        <button
+          disabled={copied}
+          type="button"
+          onClick={handleCopyUrl}
+          className={`bg-blue-500 text-white py-2 px-4 rounded-md ${
+            copied
+              ? "bg-green-600"
+              : "hover:bg-blue-600 disabled:bg-gray-600"
+          }`}
+        >
+          {copied ? "Copied!" : "Copy Sharing URL"}
+        </button>
+      </div>
+      <div className="flex-grow p-4 overflow-y-auto">
         {wishlistItems.length > 0 ? (
           <>
             <h2 className="text-lg font-semibold mb-4 text-blue-600">
               Wishlist Items:
             </h2>
-            <button
-              disabled={copied}
-              type="button"
-              onClick={handleCopyUrl}
-              className="mb-4 bg-blue-500 text-white py-2 px-4 rounded-md disabled:bg-green-600 hover:bg-blue-600"
-            >
-              {copied ? "Copied!" : "Copy Sharing URL"}
-            </button>
             {wishlistItems.map((item) => (
               <div
                 key={item._id}
                 className="mb-4 p-4 border rounded-md bg-white"
               >
                 <p className="font-semibold mb-2 text-blue-600">Item Link:</p>
-                <Link
-                  href={item.link}
-                  className="text-blue-600 hover:underline"
-                >
-                  {item.link}
-                </Link>
+                <div className="overflow-x-auto">
+                  <Link href={item.link} className="text-blue-600 hover:underline">
+                    {item.link}
+                  </Link>
+                </div>
                 <div className="mt-2">
                   <button
                     onClick={() => handleEditItem(item)}
@@ -148,8 +152,8 @@ const App = ({ user }) => {
           </p>
         )}
       </div>
-    </>
+    </div>
   ) : null;
-};
+}
 
 export default App;
