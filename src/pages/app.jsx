@@ -6,6 +6,7 @@ import Link from "next/link";
 import { sessionOptions } from "@/lib/session";
 
 import WishlistForm from "@/components/WishlistForm";
+import { useDarkMode } from "@/contexts/DarkModContext";
 
 export const getServerSideProps = withIronSessionSsr(async (context) => {
   const { user } = context.req.session;
@@ -22,6 +23,7 @@ const App = ({ user }) => {
   const [copied, setCopied] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [newLink, setNewLink] = useState("");
+  const { darkMode } = useDarkMode();
 
   const router = useRouter();
 
@@ -127,8 +129,14 @@ const App = ({ user }) => {
   };
 
   return user ? (
-    <div className="flex-grow p-4 overflow-y-auto">
-      <div className="flex-none bg-white text-black p-4">
+    <div
+      className={`flex-grow p-4 overflow-y-auto ${
+        darkMode ? "bg-gray-800 text-gray-300" : "bg-white text-black"
+      }`}
+    >
+      <div className={`flex-none ${
+        darkMode ? "bg-gray-800" : "bg-white"
+      } text-black p-4`}>
         <WishlistForm onSubmit={handleFormSubmit} />
         <button
           disabled={copied}
@@ -146,27 +154,39 @@ const App = ({ user }) => {
       <div className="flex-grow p-4 overflow-y-auto">
         {wishlistItems.length > 0 ? (
           <>
-            <h2 className="text-lg font-semibold mb-4 text-blue-600">
+            <h2 className={`text-lg font-semibold mb-4 ${
+              darkMode ? "text-blue-300" : "text-blue-600"
+            }`}>
               Wishlist Items:
             </h2>
             {wishlistItems.map((item) => (
               <div
                 key={item._id}
-                className="mb-4 p-4 border rounded-md bg-white"
+                className={`mb-4 p-4 border rounded-md ${
+                  darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
+                }`}
               >
-                <p className="font-semibold mb-2 text-blue-600">Item Link:</p>
+                <p className={`font-semibold mb-2 ${
+                  darkMode ? "text-blue-300" : "text-blue-600"
+                }`}>
+                  Item Link:
+                </p>
                 <div className="overflow-x-auto">
                   {editingItem === item ? (
                     <input
                       type="text"
                       value={newLink}
                       onChange={(e) => setNewLink(e.target.value)}
-                      className="border rounded-md p-2"
+                      className={`border rounded-md p-2 ${
+                        darkMode ? "bg-gray-700 text-gray-300" : ""
+                      }`}
                     />
                   ) : (
                     <Link
                       href={item.link}
-                      className="text-blue-600 hover:underline"
+                      className={`${
+                        darkMode ? "text-blue-300 hover:underline" : "text-blue-600 hover:underline"
+                      }`}
                     >
                       {item.link}
                     </Link>
@@ -189,7 +209,9 @@ const App = ({ user }) => {
                   </button>
                   <button
                     onClick={() => handleDeleteItem(item._id)}
-                    className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
+                    className={`bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 ${
+                      darkMode ? "text-foreground" : ""
+                    } ml-2`}
                   >
                     Delete
                   </button>
@@ -198,7 +220,9 @@ const App = ({ user }) => {
             ))}
           </>
         ) : (
-          <p className="font-bold text-foreground">
+          <p className={`font-bold ${
+            darkMode ? "text-foreground" : "text-black"
+          }`}>
             No wishlist items found. Try adding some!
           </p>
         )}

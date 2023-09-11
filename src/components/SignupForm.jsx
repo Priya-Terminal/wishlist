@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import { useDarkMode } from "@/contexts/DarkModContext"; 
 
 const SignupForm = ({ onSignUp }) => {
   const router = useRouter();
@@ -9,7 +10,7 @@ const SignupForm = ({ onSignUp }) => {
   const [passwordError, setPasswordError] = useState("");
   const [matchError, setMatchError] = useState("");
   const [signupError, setSignupError] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode } = useDarkMode(); 
 
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -135,24 +136,8 @@ const SignupForm = ({ onSignUp }) => {
           </button>
         </div>
       </form>
-      <div className="mt-4">
-        <label
-          className={`inline-flex items-center cursor-pointer ${
-            darkMode ? "text-gray-400" : "text-black"
-          }`}
-        >
-          <span className="mr-2">Dark Mode</span>
-          <input
-            type="checkbox"
-            className="form-checkbox h-5 w-5 text-blue-500 transition duration-150 ease-in-out"
-            checked={darkMode}
-            onChange={() => setDarkMode(!darkMode)}
-          />
-        </label>
-      </div>
     </div>
   );
 };
 
 export default SignupForm;
-

@@ -1,12 +1,15 @@
 import { useContext, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router"; // Import the router
+import { useRouter } from "next/router"; 
 import UserContext from "@/contexts/user";
-import { removeUser } from "@/utils/user"; // Import your removeUser function
+import { removeUser } from "@/utils/user";
+import { useDarkMode } from "@/contexts/DarkModContext"; 
+import DarkModeToggle from "@/components/darkmode/DarkModeToggle";
 
 const Header = () => {
   const [user, setUser] = useContext(UserContext);
   const router = useRouter();
+  const { darkMode } = useDarkMode();
 
   useEffect(() => {}, [user]);
 
@@ -21,10 +24,10 @@ const Header = () => {
   };
 
   return (
-    <header className="py-4 bg-zinc-300">
-      <div className="container mx-auto flex justify-between items-center bg-zinc-300">
+    <header className={`py-4 ${darkMode ? 'bg-gray-600' : 'bg-zinc-300'}`}>
+      <div className="container mx-auto flex justify-between items-center">
         <Link href="/">
-          <div className="text-primary text-2xl font-semibold cursor-pointer">
+          <div className={`text-2xl font-semibold cursor-pointer ${darkMode ? 'text-white' : 'text-black'}`}>
             <span style={{ color: "black" }}>ShareWish</span>
           </div>
         </Link>
@@ -32,16 +35,17 @@ const Header = () => {
           {user ? (
             <>
               <Link href="/myprofile">
-                <span className="font-semibold text-black mr-4">My Profile</span>
+                <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'} mr-4`}>My Profile</span>
               </Link>
               <button
                 onClick={handleLogout}
-                className="bg-red-500 text-foreground py-2 px-4 rounded-md hover:bg-red-600"
+                className={`py-2 px-4 rounded-md ${darkMode ? 'bg-red-700 text-white' : 'bg-red-500 text-foreground'} hover:bg-red-600`}
               >
                 Logout
               </button>
             </>
           ) : null}
+          <DarkModeToggle />
         </nav>
       </div>
     </header>

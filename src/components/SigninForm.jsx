@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { useDarkMode } from "@/contexts/DarkModContext";
 
 function SignInForm({ onSignIn }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode } = useDarkMode(); 
 
   const handleSignIn = async (event) => {
     event.preventDefault();
@@ -42,10 +43,11 @@ function SignInForm({ onSignIn }) {
             type="email"
             placeholder="Email"
             className={`w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 ${
-              darkMode ? 'dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300' : 'text-black'
+              darkMode ? 'dark:bg-gray-700 dark:border-gray-600 dark:text-black' : 'text-black'
             }`}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            style={{ color: 'black' }}
           />
         </div>
         <div className="mb-4">
@@ -53,10 +55,11 @@ function SignInForm({ onSignIn }) {
             type="password"
             placeholder="Password"
             className={`w-full px-3 py-2 rounded border focus:ring focus:ring-blue-300 ${
-              darkMode ? 'dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300' : 'text-black'
+              darkMode ? 'dark:bg-gray-700 dark:border-gray-600 dark:text-black' : 'text-black'
             }`}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            style={{ color: 'black' }}
           />
         </div>
         <button
@@ -68,20 +71,8 @@ function SignInForm({ onSignIn }) {
           Sign In
         </button>
       </form>
-      <div className="mt-4">
-        <label className={`inline-flex items-center cursor-pointer ${darkMode ? 'text-gray-400' : 'text-black'}`}>
-          <span className="mr-2">Dark Mode</span>
-          <input
-            type="checkbox"
-            className="form-checkbox h-5 w-5 text-blue-500 transition duration-150 ease-in-out"
-            checked={darkMode}
-            onChange={() => setDarkMode(!darkMode)}
-          />
-        </label>
-      </div>
     </div>
   );
 }
 
 export default SignInForm;
-

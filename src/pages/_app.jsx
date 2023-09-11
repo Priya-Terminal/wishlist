@@ -6,6 +6,7 @@ import Layout from "@/components/layout/Layout";
 
 import { getUser } from "@/utils/user";
 import UserContext from "@/contexts/user";
+import { DarkModeProvider } from "@/contexts/DarkModContext";
 
 const MyApp = ({ Component, pageProps }) => {
   const [user, setUser] = useState(null);
@@ -19,9 +20,11 @@ const MyApp = ({ Component, pageProps }) => {
 
   return (
     <UserContext.Provider value={[user, setUser]}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <DarkModeProvider>
+       <Layout>
+         <Component {...pageProps} />
+       </Layout>
+      </DarkModeProvider>
     </UserContext.Provider>
   );
 };
