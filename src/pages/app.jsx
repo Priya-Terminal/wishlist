@@ -11,9 +11,18 @@ import { useDarkMode } from "@/contexts/DarkModContext";
 export const getServerSideProps = withIronSessionSsr(async (context) => {
   const { user } = context.req.session;
 
+  if (!user) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {
-      user,
+      user: user || null,
     },
   };
 }, sessionOptions);

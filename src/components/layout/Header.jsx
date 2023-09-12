@@ -15,13 +15,22 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      removeUser(window);
-      setUser(null);
-      router.push("/");
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+  
+      if (response.ok) {
+        removeUser(window);
+        setUser(null);
+        router.push("/");
+      } else {
+        console.error("Failed to logout");
+      }
     } catch (error) {
       console.error("Error:", error);
     }
   };
+  
 
   return (
     <header className={`py-4 ${darkMode ? 'bg-gray-600' : 'bg-zinc-300'}`}>
