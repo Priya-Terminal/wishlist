@@ -134,31 +134,37 @@ const App = ({ user }) => {
         darkMode ? "bg-gray-800 text-gray-300" : "bg-white text-black"
       }`}
     >
-      <div className={`flex-none ${
-        darkMode ? "bg-gray-800" : "bg-white"
-      } text-black p-4`}>
+      <div
+        className={`flex-none ${
+          darkMode ? "bg-gray-800" : "bg-white"
+        } text-black p-4`}
+      >
         <WishlistForm onSubmit={handleFormSubmit} />
-        <button
-          disabled={copied}
-          type="button"
-          onClick={handleCopyUrl}
-          className={`bg-blue-500 text-white py-2 px-4 rounded-md ${
-            copied
-              ? "bg-green-600"
-              : "hover:bg-blue-600 disabled:bg-gray-600"
-          }`}
-        >
-          {copied ? "Copied!" : "Copy Sharing URL"}
-        </button>
       </div>
       <div className="flex-grow p-4 overflow-y-auto">
         {wishlistItems.length > 0 ? (
           <>
-            <h2 className={`text-lg font-semibold mb-4 ${
-              darkMode ? "text-blue-300" : "text-blue-600"
-            }`}>
-              Wishlist Items:
-            </h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2
+                className={`text-lg font-semibold ${
+                  darkMode ? "text-blue-300" : "text-blue-600"
+                }`}
+              >
+                Wishlist Items:
+              </h2>
+              <button
+                disabled={copied}
+                type="button"
+                onClick={handleCopyUrl}
+                className={`bg-blue-500 text-white py-2 px-4 rounded-md ${
+                  copied
+                    ? "bg-green-600"
+                    : "hover:bg-blue-600 disabled:bg-gray-600"
+                }`}
+              >
+                {copied ? "Copied!" : "Copy Sharing URL"}
+              </button>
+            </div>
             {wishlistItems.map((item) => (
               <div
                 key={item._id}
@@ -229,6 +235,7 @@ const App = ({ user }) => {
       </div>
     </div>
   ) : null;
+  
 };
 
 export default App;
