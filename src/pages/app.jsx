@@ -35,6 +35,7 @@ const App = ({ user }) => {
   const { darkMode } = useDarkMode();
 
   const router = useRouter();
+  const isAppPage = router.pathname === "/app";
 
   useEffect(() => {
     if (!user) {
@@ -157,7 +158,7 @@ const App = ({ user }) => {
               <h2
                 className={`text-lg font-semibold ${
                   darkMode ? "text-blue-300" : "text-blue-600"
-                }`}
+                } ${isAppPage ? "underline" : ""}`}
               >
                 Wishlist Items:
               </h2>
@@ -244,7 +245,6 @@ const App = ({ user }) => {
       </div>
     </div>
   ) : null;
-  
 };
 
 export default App;

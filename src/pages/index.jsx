@@ -25,7 +25,9 @@ const GoToAppSection = ({ user }) => {
   return (
     <div className="mt-4 flex justify-center">
       <p className={`text-${darkMode ? 'white' : 'black'} font-semibold`}>
-        Hello <b className={`text-${darkMode ? 'white' : 'black'}`}>{user.email}</b>, view and manage your wish list items{" "}
+        Hello <b className={`text-${darkMode ? 'white' : 'black'}`}>
+        {user.name ? user.name : user.email}
+        </b>, view and manage your wish list items{" "}
         <Link
           className={`text-blue-700 font-bold opacity-70 hover:underline hover:opacity-100 border-b-blue-700`}
           href="/app"

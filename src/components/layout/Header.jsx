@@ -44,7 +44,14 @@ const Header = () => {
           {user ? (
             <>
               <Link href="/myprofile">
-                <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'} mr-4`}>My Profile</span>
+                <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'} mr-4 ${router.pathname === '/myprofile' ? 'underline' : ''}`}>
+                  My Profile
+                </span>
+              </Link>
+              <Link href="/app">
+                <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'} mr-4 ${router.pathname === '/app' ? 'underline' : ''}`}>
+                  My Wishlist
+                </span>
               </Link>
               <button
                 onClick={handleLogout}

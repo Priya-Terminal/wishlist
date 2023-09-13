@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { withIronSessionSsr } from "iron-session/next";
 import { sessionOptions } from "@/lib/session";
 import Profile from "@/components/Profile";
@@ -24,14 +24,10 @@ const MyProfilePage = ({ user }) => {
   };
 
   return (
-    <div
-      className={`min-h-screen flex items-center justify-center ${
-        darkMode ? "bg-gray-800 text-gray-300" : "bg-white text-black"
-      }`}
-    >
-      <div className="max-w-md mx-auto p-6 rounded-md shadow-md">
-        <Profile user={currentUser} updateUser={updateUser} />
-      </div>
+    <div className={`min-h-screen ${
+      darkMode ? "bg-gray-800 text-gray-300" : "bg-white text-black"
+    } flex justify-center items-center`}>
+      <Profile user={currentUser} updateUser={updateUser} />
     </div>
   );
 }
