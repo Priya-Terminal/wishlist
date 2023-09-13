@@ -200,6 +200,7 @@ const App = ({ user }) => {
                   ) : (
                     <Link
                       href={item.link}
+                      target="_blank"
                       className={`${
                         darkMode ? "text-blue-300 hover:underline" : "text-blue-600 hover:underline"
                       }`}
