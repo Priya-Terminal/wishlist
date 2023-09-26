@@ -14,6 +14,7 @@ const MyApp = ({ Component, pageProps }) => {
   useEffect(() => {
     if (!user) {
       const userFromStorage = getUser(window);
+      console.log("MyApp userFromStorage:", userFromStorage); 
       setUser(userFromStorage);
     }
   }, [user]);
@@ -21,9 +22,9 @@ const MyApp = ({ Component, pageProps }) => {
   return (
     <UserContext.Provider value={[user, setUser]}>
       <DarkModeProvider>
-       <Layout>
-         <Component {...pageProps} />
-       </Layout>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </DarkModeProvider>
     </UserContext.Provider>
   );

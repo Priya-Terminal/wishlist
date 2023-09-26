@@ -104,6 +104,8 @@ const getItems = async (req, res) => {
     console.log(req.query);
     const userId = req.query.user || session.user.id;
 
+    console.log("getItems userId:", userId);
+
     const items = await WishlistItem.find({ userId }).sort({ priority: 1 });
     res.status(200).json(items);
   } catch (error) {

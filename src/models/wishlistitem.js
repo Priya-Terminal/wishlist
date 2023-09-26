@@ -13,4 +13,23 @@ const wishlistItemSchema = mongoose.Schema({
 
 const WishlistItem = mongoose.model("WishlistItem", wishlistItemSchema);
 
+export const findByIdAndUpdate = async (id, updateData, options) => {
+  try {
+    const updatedItem = await WishlistItem.findByIdAndUpdate(
+      id,
+      updateData,
+      options
+    );
+
+    if (!updatedItem) {
+      return null;
+    }
+
+    return updatedItem;
+  } catch (error) {
+    console.error("Error updating wishlist item:", error);
+    throw error;
+  }
+};
+
 export default WishlistItem;

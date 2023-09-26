@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { withIronSessionSsr } from "iron-session/next";
 import Link from "next/link";
-
-import { sessionOptions } from "@/lib/session";
-
 import WishlistForm from "@/components/WishlistForm";
+import WishlistItem from "@/components/WishlistItem";
 import { useDarkMode } from "@/contexts/DarkModContext";
+import { sessionOptions } from "@/lib/session";
 
 export const getServerSideProps = withIronSessionSsr(async (context) => {
   const { user } = context.req.session;
@@ -14,7 +13,7 @@ export const getServerSideProps = withIronSessionSsr(async (context) => {
   if (!user) {
     return {
       redirect: {
-        destination: '/',
+        destination: "/",
         permanent: false,
       },
     };
@@ -33,11 +32,12 @@ const App = ({ user }) => {
   const [editingItem, setEditingItem] = useState(null);
   const [newLink, setNewLink] = useState("");
   const { darkMode } = useDarkMode();
-
   const router = useRouter();
   const isAppPage = router.pathname === "/app";
 
   useEffect(() => {
+    console.log("useEffect called!");
+    console.log("useEffect called with user:", user);
     if (!user) {
       router.push("/");
     }
@@ -46,9 +46,11 @@ const App = ({ user }) => {
 
   const fetchData = async () => {
     try {
+      console.log("Fetching data..");
       const response = await fetch("/api/item");
       if (response.ok) {
         const items = await response.json();
+        console.log("Fetched Wishlist Items:", items);
         setWishlistItems(items);
       } else {
         console.error("Failed to fetch wishlist items");
@@ -66,6 +68,9 @@ const App = ({ user }) => {
       setCopied(false);
     }, 2000);
   };
+
+  console.log("User ID:", user.id);
+  console.log("User Data:", user);
 
   const handleFormSubmit = async (wishlistLink) => {
     try {
@@ -88,7 +93,6 @@ const App = ({ user }) => {
       console.error("Error:", error);
     }
   };
-
   const handleEditItem = (item) => {
     setEditingItem(item);
     setNewLink(item.link);
@@ -117,7 +121,6 @@ const App = ({ user }) => {
       console.error("Error:", error);
     }
   };
-
   const handleDeleteItem = async (id) => {
     try {
       const response = await fetch("/api/item", {
@@ -132,6 +135,46 @@ const App = ({ user }) => {
         setWishlistItems(wishlistItems.filter((item) => item._id !== id));
       } else {
         console.error("Failed to delete wishlist item");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleEnrichAll = async () => {
+    try {
+      if (!user) {
+        console.error("User not found.");
+        return;
+      }
+
+      const userId = user.id;
+
+      for (const item of wishlistItems) {
+        if (!item.isEnriched) {
+          const response = await fetch("/api/enrich", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId, itemId: item._id, itemLink: item.link }),
+          });
+
+          if (response.ok) {
+            const enrichedItem = await response.json();
+            setWishlistItems((prevItems) =>
+              prevItems.map((prevItem) =>
+                prevItem._id === item._id ? { ...prevItem, ...enrichedItem, isEnriched: true } : prevItem
+              )
+            );
+
+            console.log("Enriched Items:", wishlistItems);
+
+            setEnrichedItems((prevEnrichedItems) => [...prevEnrichedItems, enrichedItem]);
+          } else {
+            console.error("Failed to enrich wishlist item");
+          }
+        }
       }
     } catch (error) {
       console.error("Error:", error);
@@ -198,15 +241,17 @@ const App = ({ user }) => {
                       }`}
                     />
                   ) : (
-                    <Link
-                      href={item.link}
-                      target="_blank"
-                      className={`${
-                        darkMode ? "text-blue-300 hover:underline" : "text-blue-600 hover:underline"
-                      }`}
-                    >
-                      {item.link}
-                    </Link>
+                    item.link && (
+                      <Link
+                        href={item.link}
+                        target="_blank"
+                        className={`${
+                          darkMode ? "text-blue-300 hover:underline" : "text-blue-600 hover:underline"
+                        }`}
+                      >
+                        {item.link}
+                      </Link>
+                    )
                   )}
                 </div>
                 <div className="mt-2">
@@ -244,6 +289,14 @@ const App = ({ user }) => {
           </p>
         )}
       </div>
+      <button
+        onClick={handleEnrichAll}
+        className={`bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mt-4 ${
+          darkMode ? "text-foreground" : ""
+        }`}
+      >
+        Enrich All Items
+      </button>
     </div>
   ) : null;
 };

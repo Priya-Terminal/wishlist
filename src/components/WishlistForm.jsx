@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { useDarkMode } from "@/contexts/DarkModContext";
 
 const WishlistForm = ({ onSubmit }) => {
-  const [wishlistLink, setWishlistLinks] = useState("");
+  const [wishlistLink, setWishlistLink] = useState("");
   const { darkMode } = useDarkMode(); 
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(wishlistLink);
-    setWishlistLinks("");
+    setWishlistLink("");
   };
 
   return (
