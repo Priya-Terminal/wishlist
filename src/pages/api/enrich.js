@@ -42,6 +42,7 @@ const scrapeData = async (url) => {
     }; 
   }
 };
+export { scrapeData };
 
 export default async (req, res) => {
   try {
@@ -89,11 +90,6 @@ export default async (req, res) => {
         console.error(`Error enriching item ${item._id}: ${error}`);
       }
     }
-    console.log("Enriched Items:", enrichedItems);
-    console.log("Enrichment process completed");
-    console.log(`Total Items: ${userWishlistItems.length}`);
-    console.log(`Enriched Items: ${enrichedItemCount}`);
-    console.log(`Errored Items: ${erroredItemCount}`);
 
     return res.status(200).json({
       message: 'Enrichment of user wishlist items completed successfully',

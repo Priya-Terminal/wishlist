@@ -4,6 +4,7 @@ import { withIronSessionApiRoute } from "iron-session/next";
 import { sessionOptions } from "@/lib/session";
 import { getDatabase, WishlistItem } from "@/models";
 import { ObjectId } from "mongodb";
+import { launch } from 'puppeteer'; 
 
 const router = createRouter();
 
@@ -20,18 +21,56 @@ const addItem = async (req, res) => {
     const { link } = req.body;
     const userId = session.user.id;
 
+    const existingItem = await WishlistItem.findOne({ link, userId });
+    if (existingItem) {
+      return res.status(400).json({ error: "Item with the same link already exists" });
+    }
+
+    const browser = await launch({ headless: "new", timeout: 60000 });
+    const page = await browser.newPage();
+    await page.goto(link);
+
+    let title, description, image;
+
+    try {
+      title = await page.$eval('meta[property="og:title"]', (element) => element.getAttribute('content'));
+    } catch (error) {
+      title = "Title Not Found";
+    }
+
+    try {
+      description = await page.$eval('meta[property="og:description"]', (element) => element.getAttribute('content'));
+    } catch (error) {
+      description = "Description Not Found";
+    }
+
+    try {
+      image = await page.$eval('meta[property="og:image"]', (element) => element.getAttribute('content'));
+    } catch (error) {
+      image = "https://i.imgur.com/Ki1kaw4.png";
+    }
+
+    const { price, priority } = req.body;
+    const defaultTitle = "Title Not Found";
+    const defaultImage = "https://i.imgur.com/Ki1kaw4.png";
+    const defaultDescription = "Description Not Found";
+
     const newItem = new WishlistItem({
-      title: "New Item",
-      price: 0,
-      image: "https://via.placeholder.com/150",
-      priority: 0,
+      title: title || defaultTitle,
+      description: description || defaultDescription,
+      price: price || 0,
+      image: image || defaultImage,
+      priority: priority || 0,
       userId,
       link,
     });
 
     await newItem.save();
 
-    res.send(newItem);
+    await browser.close();
+
+    return res.send(newItem);
+
   } catch (error) {
     console.error("Error adding item to MongoDB:", error);
     console.error(error.stack);
@@ -98,15 +137,18 @@ const getItems = async (req, res) => {
     const session = req.session;
 
     if (!session) {
+      console.log("Not authenticated");
       return res.status(401).json({ error: "Not authenticated" });
     }
 
     console.log(req.query);
     const userId = req.query.user || session.user.id;
-
-    console.log("getItems userId:", userId);
-
     const items = await WishlistItem.find({ userId }).sort({ priority: 1 });
+    for (const item of items) {
+      if (!item.description || item.description.trim() === '') {
+        item.description = "Description Not Found";
+      }
+    }
     res.status(200).json(items);
   } catch (error) {
     console.error("Error retrieving items from MongoDB:", error);

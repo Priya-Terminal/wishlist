@@ -4,6 +4,7 @@ mongoose.models = {};
 
 const wishlistItemSchema = mongoose.Schema({
   title: String,
+  description: String,
   price: Number,
   link: String,
   image: String,

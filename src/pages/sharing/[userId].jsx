@@ -6,7 +6,6 @@ import { sessionOptions } from "@/lib/session";
 
 export const getServerSideProps = withIronSessionSsr(async (context) => {
   const { userId } = context.query;
-  console.log("SharingPage userId:", userId);
   const { user } = context.req.session;
 
   return {
@@ -35,30 +34,21 @@ const SharingPage = ({ userId, user }) => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`/api/enrich?userId=${userId}`);
+      const response = await fetch(`/api/item?user=${userId}`);
       if (response.ok) {
-        const data = await response.json();
-        console.log("API Response Data:", data);
-        const items = data.enrichedItems;
-        console.log("Enriched items:", items);
-        console.log(`Total items: ${items.totalItems}`);
-        console.log(`Enriched items: ${items.enrichedItems}`);
-        console.log(`Errored items: ${items.erroredItems}`);
+        const items = await response.json();
+        console.log("Fetched wishlist items:", items);
         setWishlistItems(items);
         setIsLoading(false);
       } else {
         console.error("Failed to fetch wishlist items");
         setIsLoading(false);
       }
-
     } catch (error) {
       console.error("Error:", error);
       setIsLoading(false);
     }
   };
-
-  console.log("userId:", userId);
-  console.log("wishlistItems:", wishlistItems);
 
   return user ? (
     <div className={`m-4 ${isLoading ? (darkMode ? 'dark:bg-black' : 'bg-white') : (darkMode ? 'dark:bg-gray-800' : 'bg-white')}`}>
@@ -66,7 +56,7 @@ const SharingPage = ({ userId, user }) => {
         <div className={`p-4 ${darkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
           Loading...
         </div>
-      ) : userId && wishlistItems.length > 0 ? (
+      ) : wishlistItems.length > 0 ? (
         <>
           <h2 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
             Wishlist Items:

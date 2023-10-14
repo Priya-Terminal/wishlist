@@ -26,11 +26,12 @@ export const getServerSideProps = withIronSessionSsr(async (context) => {
   };
 }, sessionOptions);
 
-const App = ({ user }) => {
+const App = ({ userId, user }) => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [copied, setCopied] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [newLink, setNewLink] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
   const { darkMode } = useDarkMode();
   const router = useRouter();
   const isAppPage = router.pathname === "/app";
@@ -60,6 +61,13 @@ const App = ({ user }) => {
     }
   };
 
+  // console.log("Wishlist Items:", wishlistItems);
+
+  // wishlistItems.forEach((item, index) => {
+  //   console.log(`Item ${index + 1}:`, item);
+  //   console.log(`Description of Item ${index + 1}:`, item.description);
+  // });
+
   const handleCopyUrl = () => {
     const url = `${window.location.origin}/sharing/${user.id}`;
     navigator.clipboard.writeText(url);
@@ -86,7 +94,13 @@ const App = ({ user }) => {
         const newItem = await response.json();
         const updatedWishlistItems = [...wishlistItems, newItem];
         setWishlistItems(updatedWishlistItems);
-      } else {
+      } else if (response.status === 400) {
+          const errorData = await response.json();
+          setAlertMessage(errorData.error);
+          setTimeout(() => {
+            setAlertMessage("");
+          }, 2000);
+        }else{
         console.error("Failed to add wishlist item");
       }
     } catch (error) {
@@ -141,164 +155,100 @@ const App = ({ user }) => {
     }
   };
 
-  const handleEnrichAll = async () => {
-    try {
-      if (!user) {
-        console.error("User not found.");
-        return;
-      }
-
-      const userId = user.id;
-
-      for (const item of wishlistItems) {
-        if (!item.isEnriched) {
-          const response = await fetch("/api/enrich", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId, itemId: item._id, itemLink: item.link }),
-          });
-
-          if (response.ok) {
-            const enrichedItem = await response.json();
-            setWishlistItems((prevItems) =>
-              prevItems.map((prevItem) =>
-                prevItem._id === item._id ? { ...prevItem, ...enrichedItem, isEnriched: true } : prevItem
-              )
-            );
-
-            console.log("Enriched Items:", wishlistItems);
-
-            setEnrichedItems((prevEnrichedItems) => [...prevEnrichedItems, enrichedItem]);
-          } else {
-            console.error("Failed to enrich wishlist item");
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
   return user ? (
-    <div
-      className={`flex-grow p-4 overflow-y-auto ${
-        darkMode ? "bg-gray-800 text-gray-300" : "bg-white text-black"
-      }`}
-    >
-      <div
-        className={`flex-none ${
-          darkMode ? "bg-gray-800" : "bg-white"
-        } text-black p-4`}
-      >
+    <div className={`flex-grow p-4 overflow-y-auto ${darkMode ? "bg-gray-800 text-gray-300" : "bg-white text-black"}`}>
+      <div className={`flex-none ${darkMode ? "bg-gray-800" : "bg-white"} text-black p-4`}>
         <WishlistForm onSubmit={handleFormSubmit} />
       </div>
+  
+      {alertMessage && (
+        <div className="bg-red-500 text-white py-2 px-4 rounded-md mb-4">
+          {alertMessage}
+        </div>
+      )}
+  
       <div className="flex-grow p-4 overflow-y-auto">
         {wishlistItems.length > 0 ? (
           <>
             <div className="flex justify-between items-center mb-4">
-              <h2
-                className={`text-lg font-semibold ${
-                  darkMode ? "text-blue-300" : "text-blue-600"
-                } ${isAppPage ? "underline" : ""}`}
-              >
+              <h2 className={`text-lg font-semibold ${darkMode ? "text-blue-300" : "text-blue-600"} ${isAppPage ? "underline" : ""}`}>
                 Wishlist Items:
               </h2>
+  
               <button
                 disabled={copied}
                 type="button"
                 onClick={handleCopyUrl}
-                className={`bg-blue-500 text-white py-2 px-4 rounded-md ${
-                  copied
-                    ? "bg-green-600"
-                    : "hover:bg-blue-600 disabled:bg-gray-600"
-                }`}
+                className={`bg-blue-500 text-white py-2 px-4 rounded-md ${copied ? "bg-green-600" : "hover:bg-blue-600 disabled:bg-gray-600"}`}
               >
                 {copied ? "Copied!" : "Copy Sharing URL"}
               </button>
             </div>
+  
             {wishlistItems.map((item) => (
-              <div
-                key={item._id}
-                className={`mb-4 p-4 border rounded-md ${
-                  darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
-                }`}
-              >
-                <p className={`font-semibold mb-2 ${
-                  darkMode ? "text-blue-300" : "text-blue-600"
-                }`}>
-                  Item Link:
-                </p>
-                <div className="overflow-x-auto">
-                  {editingItem === item ? (
-                    <input
-                      type="text"
-                      value={newLink}
-                      onChange={(e) => setNewLink(e.target.value)}
-                      className={`border rounded-md p-2 ${
-                        darkMode ? "bg-gray-700 text-gray-300" : ""
-                      }`}
-                    />
-                  ) : (
-                    item.link && (
-                      <Link
-                        href={item.link}
-                        target="_blank"
-                        className={`${
-                          darkMode ? "text-blue-300 hover:underline" : "text-blue-600 hover:underline"
-                        }`}
-                      >
-                        {item.link}
-                      </Link>
-                    )
-                  )}
+              <div key={item._id} className={`mb-4 p-4 border rounded-md flex ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}>
+                <div className="w-1/4 pr-4">
+                  <img src={item.image} alt={item.title} className={`w-34 h-30 object-cover rounded-md ${darkMode ? "border-gray-300" : ""}`} />
                 </div>
-                <div className="mt-2">
-                  <button
-                    onClick={() => {
-                      if (editingItem === item) {
-                        handleSaveItem(item._id, newLink);
-                      } else {
-                        handleEditItem(item);
-                      }
-                    }}
-                    className={`bg-blue-500 text-white py-2 px-4 rounded-md ${
-                      editingItem === item ? "hover:bg-green-600" : "hover:bg-blue-600"
-                    }`}
-                  >
-                    {editingItem === item ? "Save" : "Edit"}
-                  </button>
-                  <button
-                    onClick={() => handleDeleteItem(item._id)}
-                    className={`bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 ${
-                      darkMode ? "text-foreground" : ""
-                    } ml-2`}
-                  >
-                    Delete
-                  </button>
+  
+                <div className="w-3/4">
+                  <p className={`font-semibold mb-2 ${darkMode ? "text-blue-400" : "text-blue-600"}`}>Item Link:</p>
+                  <div className="overflow-x-auto">
+                    {editingItem === item ? (
+                      <input
+                        type="text"
+                        value={newLink}
+                        onChange={(e) => setNewLink(e.target.value)}
+                        className={`border rounded-md p-2 ${darkMode ? "bg-gray-700 text-gray-300" : ""}`}
+                      />
+                    ) : (
+                      item.link && (
+                        <a href={item.link} target="_blank" className={`${darkMode ? "text-blue-300 hover:underline" : "text-blue-600 hover:underline"}`}>
+                          {item.link}
+                        </a>
+                      )
+                    )}
+                  </div>
+  
+                  <p className={`font-semibold mb-2 ${darkMode ? "text-blue-400" : "text-blue-600"}`}>Title:</p>
+                  <p className={`dark:text-gray-300 ${darkMode ? "text-gray-400" : ""}`}>{item.title}</p>
+  
+                  <p className={`font-semibold mb-2 ${darkMode ? "text-blue-400" : "text-blue-600"}`}>Description:</p>
+                  <p className="dark:text-gray-300">{item.description || "No description available."}</p>
+  
+                  <div className="mt-2">
+                    <button
+                      onClick={() => {
+                        if (editingItem === item) {
+                          handleSaveItem(item._id, newLink);
+                        } else {
+                          handleEditItem(item);
+                        }
+                      }}
+                      className={`bg-blue-500 text-white py-2 px-4 rounded-md ${editingItem === item ? "hover:bg-green-600" : "hover:bg-blue-600"}`}
+                    >
+                      {editingItem === item ? "Save" : "Edit"}
+                    </button>
+  
+                    <button
+                      onClick={() => handleDeleteItem(item._id)}
+                      className={`bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 ${darkMode ? "text-foreground" : ""} ml-2`}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </>
         ) : (
-          <p className={`font-bold ${
-            darkMode ? "text-foreground" : "text-black"
-          }`}>
+          <p className={`font-bold ${darkMode ? "text-foreground" : "text-black"}`}>
             No wishlist items found. Try adding some!
           </p>
         )}
       </div>
-      <button
-        onClick={handleEnrichAll}
-        className={`bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mt-4 ${
-          darkMode ? "text-foreground" : ""
-        }`}
-      >
-        Enrich All Items
-      </button>
     </div>
-  ) : null;
-};
+  ) : null;  
+}
 
 export default App;
