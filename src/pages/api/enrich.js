@@ -5,8 +5,9 @@ import { launch } from 'puppeteer';
 const puppeteer = require('puppeteer-core');
 
 const scrapeData = async (url) => {
+  const chromiumExecutablePath = process.env.CHROME_EXECUTABLE_PATH;
   const browser = await puppeteer.launch({  headless: "new",
-    executablePath: process.env.CHROME_EXECUTABLE_PATH,
+    executablePath: chromiumExecutablePath,
     args: ['--no-sandbox'], 
     timeout: 60000 });
   const page = await browser.newPage();
