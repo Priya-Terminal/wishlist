@@ -203,9 +203,11 @@ const App = ({ userId, user }) => {
                       />
                     ) : (
                       item.link && (
+                       <div className="max-w-sm truncate">
                         <a href={item.link} target="_blank" className={`${darkMode ? "text-blue-300 hover:underline" : "text-blue-600 hover:underline"}`}>
                           {item.link}
                         </a>
+                       </div>
                       )
                     )}
                   </div>
