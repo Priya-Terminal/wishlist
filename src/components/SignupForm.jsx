@@ -12,8 +12,7 @@ const SignupForm = ({ onSignUp }) => {
   const [signupError, setSignupError] = useState("");
   const { darkMode } = useDarkMode(); 
 
-  const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_.])[A-Za-z\d@$!%*?&_.]{8,}$/;
 
   const handleSignUp = async (e) => {
     e.preventDefault();
