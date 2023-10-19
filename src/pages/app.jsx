@@ -26,7 +26,7 @@ export const getServerSideProps = withIronSessionSsr(async (context) => {
   };
 }, sessionOptions);
 
-const App = ({ userId, user }) => {
+const App = ({  user }) => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [copied, setCopied] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
@@ -60,13 +60,6 @@ const App = ({ userId, user }) => {
       console.error("Error:", error);
     }
   };
-
-  // console.log("Wishlist Items:", wishlistItems);
-
-  // wishlistItems.forEach((item, index) => {
-  //   console.log(`Item ${index + 1}:`, item);
-  //   console.log(`Description of Item ${index + 1}:`, item.description);
-  // });
 
   const handleCopyUrl = () => {
     const url = `${window.location.origin}/sharing/${user.id}`;
@@ -109,7 +102,9 @@ const App = ({ userId, user }) => {
   };
   const handleEditItem = (item) => {
     setEditingItem(item);
-    setNewLink(item.link);
+    if (item) {
+      setNewLink(item.link);
+    }
   };
 
   const handleSaveItem = async (id, newLink) => {
@@ -160,13 +155,13 @@ const App = ({ userId, user }) => {
       <div className={`flex-none ${darkMode ? "bg-gray-800" : "bg-white"} text-black p-4`}>
         <WishlistForm onSubmit={handleFormSubmit} />
       </div>
-  
+
       {alertMessage && (
         <div className="bg-red-500 text-white py-2 px-4 rounded-md mb-4">
           {alertMessage}
         </div>
       )}
-  
+
       <div className="flex-grow p-4 overflow-y-auto">
         {wishlistItems.length > 0 ? (
           <>
@@ -174,7 +169,7 @@ const App = ({ userId, user }) => {
               <h2 className={`text-lg font-semibold ${darkMode ? "text-blue-300" : "text-blue-600"} ${isAppPage ? "underline" : ""}`}>
                 Wishlist Items:
               </h2>
-  
+
               <button
                 disabled={copied}
                 type="button"
@@ -184,63 +179,17 @@ const App = ({ userId, user }) => {
                 {copied ? "Copied!" : "Copy Sharing URL"}
               </button>
             </div>
-  
+
             {wishlistItems.map((item) => (
-              <div key={item._id} className={`mb-4 p-4 border rounded-md flex ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}>
-                <div className="w-1/4 pr-4">
-                  <img src={item.image} alt={item.title} className={`w-34 h-30 object-cover rounded-md ${darkMode ? "border-gray-300" : ""}`} />
-                </div>
-  
-                <div className="w-3/4">
-                  <p className={`font-semibold mb-2 ${darkMode ? "text-blue-400" : "text-blue-600"}`}>Item Link:</p>
-                  <div className="overflow-x-auto">
-                    {editingItem === item ? (
-                      <input
-                        type="text"
-                        value={newLink}
-                        onChange={(e) => setNewLink(e.target.value)}
-                        className={`border rounded-md p-2 ${darkMode ? "bg-gray-700 text-gray-300" : ""}`}
-                      />
-                    ) : (
-                      item.link && (
-                       <div className="max-w-sm truncate">
-                        <a href={item.link} target="_blank" className={`${darkMode ? "text-blue-300 hover:underline" : "text-blue-600 hover:underline"}`}>
-                          {item.link}
-                        </a>
-                       </div>
-                      )
-                    )}
-                  </div>
-  
-                  <p className={`font-semibold mb-2 ${darkMode ? "text-blue-400" : "text-blue-600"}`}>Title:</p>
-                  <p className={`dark:text-gray-300 ${darkMode ? "text-gray-400" : ""}`}>{item.title}</p>
-  
-                  <p className={`font-semibold mb-2 ${darkMode ? "text-blue-400" : "text-blue-600"}`}>Description:</p>
-                  <p className="dark:text-gray-300">{item.description || "No description available."}</p>
-  
-                  <div className="mt-2">
-                    <button
-                      onClick={() => {
-                        if (editingItem === item) {
-                          handleSaveItem(item._id, newLink);
-                        } else {
-                          handleEditItem(item);
-                        }
-                      }}
-                      className={`bg-blue-500 text-white py-2 px-4 rounded-md ${editingItem === item ? "hover:bg-green-600" : "hover:bg-blue-600"}`}
-                    >
-                      {editingItem === item ? "Save" : "Edit"}
-                    </button>
-  
-                    <button
-                      onClick={() => handleDeleteItem(item._id)}
-                      className={`bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 ${darkMode ? "text-foreground" : ""} ml-2`}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <WishlistItem
+                key={item._id}
+                item={item}
+                onEdit={handleEditItem}
+                onSave={handleSaveItem}
+                onDelete={handleDeleteItem}
+                editingItem={editingItem} 
+                readOnly={false}
+              />
             ))}
           </>
         ) : (
@@ -250,7 +199,7 @@ const App = ({ userId, user }) => {
         )}
       </div>
     </div>
-  ) : null;  
+  ) : null;
 }
 
 export default App;
