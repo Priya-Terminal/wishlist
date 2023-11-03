@@ -26,12 +26,7 @@ const addItem = async (req, res) => {
       return res.status(400).json({ error: "Item with the same link already exists" });
     }
 
-    const chromiumExecutablePath = process.env.CHROME_EXECUTABLE_PATH;
-    const browser = await launch({ 
-    headless: "new",
-    executablePath: chromiumExecutablePath,
-    args: ['--no-sandbox'], 
-    timeout: 60000 });
+    const browser = await launch({ headless: "new" });
     const page = await browser.newPage();
     await page.goto(link);
 

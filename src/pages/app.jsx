@@ -74,6 +74,7 @@ const App = ({  user }) => {
   console.log("User Data:", user);
 
   const handleFormSubmit = async (wishlistLink) => {
+    setAlertMessage("Adding wishlist item...");
     try {
       const response = await fetch("/api/item", {
         method: "POST",
@@ -87,6 +88,10 @@ const App = ({  user }) => {
         const newItem = await response.json();
         const updatedWishlistItems = [...wishlistItems, newItem];
         setWishlistItems(updatedWishlistItems);
+        setAlertMessage("WIshlist item added sucessfully!");
+        setTimeout(() => {
+          setAlertMessage("");
+        }, 2000);
       } else if (response.status === 400) {
           const errorData = await response.json();
           setAlertMessage(errorData.error);
@@ -94,10 +99,18 @@ const App = ({  user }) => {
             setAlertMessage("");
           }, 2000);
         }else{
+        setAlertMessage("Failed to add wishlist item");
+        setTimeout(() => {
+          setAlertMessage("");
+        }, 3000);
         console.error("Failed to add wishlist item");
       }
     } catch (error) {
       console.error("Error:", error);
+      setAlertMessage("An error occured");
+      setTimeout(() => {
+        setAlertMessage("");
+      }, 3000);
     }
   };
   const handleEditItem = (item) => {

@@ -2,14 +2,10 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import mongoose from 'mongoose'; 
 import { findByIdAndUpdate } from '@/models/wishlistitem';
 import { launch } from 'puppeteer';
-const puppeteer = require('puppeteer-core');
 
 const scrapeData = async (url) => {
-  const chromiumExecutablePath = process.env.CHROME_EXECUTABLE_PATH;
-  const browser = await puppeteer.launch({  headless: "new",
-    executablePath: chromiumExecutablePath,
-    args: ['--no-sandbox'], 
-    timeout: 60000 });
+  const browser = await puppeteer.launch();
+
   const page = await browser.newPage();
 
   await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36');
