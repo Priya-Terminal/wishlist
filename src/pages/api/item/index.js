@@ -27,20 +27,7 @@ const addItem = async (req, res) => {
       return res.status(400).json({ error: "Item with the same link already exists" });
     }
 
-    browser = await launchChromium({
-      headless:true,
-      args: [
-        '--disable-gpu',
-        '--disable-dev-shm-usage',
-        '--disable-setuid-sandbox',
-        '--no-first-run',
-        '--no-sandbox',
-        '--no-zygote',
-        '--deterministic-fetch',
-        '--disable-features=IsolateOrigins',
-        '--disable-site-isolation-trials',
-    ],
-    });
+    browser = await launchChromium();
     context = await browser.newContext({
       userAgent:
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
