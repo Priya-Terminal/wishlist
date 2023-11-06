@@ -242,19 +242,6 @@
     tslib "^2.5.0"
     webcrypto-core "^1.7.7"
 
-"@puppeteer/browsers@1.7.1":
-  version "1.7.1"
-  resolved "https://registry.npmjs.org/@puppeteer/browsers/-/browsers-1.7.1.tgz"
-  integrity sha512-nIb8SOBgDEMFY2iS2MdnUZOg2ikcYchRrBoF+wtdjieRFKR2uGRipHY/oFLo+2N6anDualyClPzGywTHRGrLfw==
-  dependencies:
-    debug "4.3.4"
-    extract-zip "2.0.1"
-    progress "2.0.3"
-    proxy-agent "6.3.1"
-    tar-fs "3.0.4"
-    unbzip2-stream "1.4.3"
-    yargs "17.7.1"
-
 "@remix-run/router@1.9.0":
   version "1.9.0"
   resolved "https://registry.npmjs.org/@remix-run/router/-/router-1.9.0.tgz"
@@ -2993,39 +2980,6 @@ punycode@^2.1.0, punycode@^2.1.1:
   version "2.3.0"
   resolved "https://registry.npmjs.org/punycode/-/punycode-2.3.0.tgz"
   integrity sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==
-
-puppeteer-core@^21.3.8:
-  version "21.3.8"
-  resolved "https://registry.npmjs.org/puppeteer-core/-/puppeteer-core-21.3.8.tgz"
-  integrity sha512-yv12E/+zZ7Lei5tJB4sUkSrsuqKibuYpYxLGbmtLUjjYIqGE5HKz9OUI2I/RFHEvF+pHi2bTbv5bWydeCGJ6Mw==
-  dependencies:
-    "@puppeteer/browsers" "1.7.1"
-    chromium-bidi "0.4.31"
-    cross-fetch "4.0.0"
-    debug "4.3.4"
-    devtools-protocol "0.0.1179426"
-    ws "8.14.2"
-
-puppeteer-core@21.3.1:
-  version "21.3.1"
-  resolved "https://registry.npmjs.org/puppeteer-core/-/puppeteer-core-21.3.1.tgz"
-  integrity sha512-3VrCDEAHk0hPvE8qtfKgsT8CzRuaQrDQGXdCOuMFJM7Ap+ghpQzhPa9H3DE3gZgwDvC5Jt7SxUkAWLCeNbD0xw==
-  dependencies:
-    "@puppeteer/browsers" "1.7.1"
-    chromium-bidi "0.4.27"
-    cross-fetch "4.0.0"
-    debug "4.3.4"
-    devtools-protocol "0.0.1179426"
-    ws "8.14.1"
-
-puppeteer@^21.2.1:
-  version "21.3.1"
-  resolved "https://registry.npmjs.org/puppeteer/-/puppeteer-21.3.1.tgz"
-  integrity sha512-MhDvA+BYmzx+9vHJ/ZtknhlPbSPjTlHQnW1QYfkGpBcGW2Yy6eMahjkNuhAzN29H9tb47IcT0QsVcUy3Txx+SA==
-  dependencies:
-    "@puppeteer/browsers" "1.7.1"
-    cosmiconfig "8.3.6"
-    puppeteer-core "21.3.1"
 
 pvtsutils@^1.3.2:
   version "1.3.5"
