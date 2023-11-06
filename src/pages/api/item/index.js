@@ -4,7 +4,7 @@ import { withIronSessionApiRoute } from "iron-session/next";
 import { sessionOptions } from "@/lib/session";
 import { getDatabase, WishlistItem } from "@/models";
 import { ObjectId } from "mongodb";
-import { launch } from 'puppeteer'; 
+import { launchChromium } from 'playwright-aws-lambda'; 
 
 const router = createRouter();
 
@@ -26,8 +26,26 @@ const addItem = async (req, res) => {
       return res.status(400).json({ error: "Item with the same link already exists" });
     }
 
-    const browser = await launch({ headless: "new" });
-    const page = await browser.newPage();
+    const browser = await launchChromium({
+      headless:true,
+      args: [
+        '--disable-gpu',
+        '--disable-dev-shm-usage',
+        '--disable-setuid-sandbox',
+        '--no-first-run',
+        '--no-sandbox',
+        '--no-zygote',
+        '--deterministic-fetch',
+        '--disable-features=IsolateOrigins',
+        '--disable-site-isolation-trials',
+    ],
+    });
+    const context = await browser.newContext({
+      userAgent:
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
+    });
+    const page = await context.newPage();
+    
     await page.goto(link);
 
     let title, description, image;
@@ -54,7 +72,6 @@ const addItem = async (req, res) => {
     const defaultTitle = "Title Not Found";
     const defaultImage = "https://i.imgur.com/Ki1kaw4.png";
     const defaultDescription = "Description Not Found";
-
     const newItem = new WishlistItem({
       title: title || defaultTitle,
       description: description || defaultDescription,

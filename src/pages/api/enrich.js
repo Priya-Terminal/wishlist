@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import mongoose from 'mongoose'; 
 import { findByIdAndUpdate } from '@/models/wishlistitem';
-import { launch } from 'puppeteer';
+import { launchChromium } from 'playwright-aws-lambda';
 
 const scrapeData = async (url) => {
-  const browser = await puppeteer.launch();
+  const browser = await launchChromium();
 
   const page = await browser.newPage();
 
