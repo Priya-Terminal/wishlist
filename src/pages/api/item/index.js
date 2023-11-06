@@ -46,7 +46,7 @@ const addItem = async (req, res) => {
     });
     const page = await context.newPage();
   
-      await page.goto(link);
+      await page.goto(link, {waitUntil: "networkidle"});
 
       let title, description, image;
 
