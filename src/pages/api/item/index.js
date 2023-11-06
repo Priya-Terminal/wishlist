@@ -45,10 +45,11 @@ const addItem = async (req, res) => {
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
     });
     const page = await context.newPage();
-    
-    await page.goto(link);
+  
+    try {
+      await page.goto(link);
 
-    let title, description, image;
+      let title, description, image;
 
     try {
       title = await page.$eval('meta[property="og:title"]', (element) => element.getAttribute('content'));
@@ -84,15 +85,23 @@ const addItem = async (req, res) => {
 
     await newItem.save();
 
-    await browser.close();
-
-    return res.send(newItem);
+    res.send(newItem);
 
   } catch (error) {
     console.error("Error adding item to MongoDB:", error);
     console.error(error.stack);
     res.status(500).json({ error: "Failed to add item" });
+  }finally {
+    // Close the page and context after usage
+    await page.close();
+    await context.close();
+    await browser.close();
   }
+} catch (error) {
+  console.error("Error adding item to MongoDB:", error);
+  console.error(error.stack);
+  res.status(500).json({ error: "Failed to add item" });
+}
 };
 
 const updateItem = async (req, res) => {
