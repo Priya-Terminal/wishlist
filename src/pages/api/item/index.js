@@ -46,7 +46,6 @@ const addItem = async (req, res) => {
     });
     const page = await context.newPage();
   
-    try {
       await page.goto(link);
 
       let title, description, image;
@@ -97,11 +96,6 @@ const addItem = async (req, res) => {
     await context.close();
     await browser.close();
   }
-} catch (error) {
-  console.error("Error adding item to MongoDB:", error);
-  console.error(error.stack);
-  res.status(500).json({ error: "Failed to add item" });
-}
 };
 
 const updateItem = async (req, res) => {
