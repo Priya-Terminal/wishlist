@@ -9,6 +9,7 @@ import { launchChromium } from 'playwright-aws-lambda';
 const router = createRouter();
 
 const addItem = async (req, res) => {
+  let browser, context, page;
   try {
     await getDatabase();
 
@@ -26,7 +27,7 @@ const addItem = async (req, res) => {
       return res.status(400).json({ error: "Item with the same link already exists" });
     }
 
-    const browser = await launchChromium({
+    browser = await launchChromium({
       headless:true,
       args: [
         '--disable-gpu',
@@ -40,11 +41,11 @@ const addItem = async (req, res) => {
         '--disable-site-isolation-trials',
     ],
     });
-    const context = await browser.newContext({
+    context = await browser.newContext({
       userAgent:
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
     });
-    const page = await context.newPage();
+    page = await context.newPage();
   
       await page.goto(link, {waitUntil: "networkidle"});
 
@@ -92,9 +93,15 @@ const addItem = async (req, res) => {
     res.status(500).json({ error: "Failed to add item" });
   }finally {
     // Close the page and context after usage
-    await page.close();
-    await context.close();
-    await browser.close();
+    if (page) {
+      await page.close();
+    }
+    if (context) {
+      await context.close();
+    }
+    if (browser) {
+      await browser.close();
+    }
   }
 };
 
