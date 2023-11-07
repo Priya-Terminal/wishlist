@@ -29,44 +29,45 @@ const addItem = async (req, res) => {
       return res.status(400).json({ error: "Item with the same link already exists" });
     }
 
-    // browser = await launchChromium({
-    //   headless:true,
-    //   args: [
-    //     '--disable-gpu',
-    //     '--disable-dev-shm-usage',
-    //     '--disable-setuid-sandbox',
-    //     '--no-first-run',
-    //     '--no-sandbox',
-    //     '--no-zygote',
-    //     '--deterministic-fetch',
-    //     '--disable-features=IsolateOrigins',
-    //     '--disable-site-isolation-trials',
-    //     '--hide-scrollbars', 
-    //     '--disable-web-security',
-    //     "--window-size=2000x1500"
-    // ],
-    // });
+    browser = await launchChromium({
+      headless:true,
+      args: [
+        '--disable-gpu',
+        '--disable-dev-shm-usage',
+        '--disable-setuid-sandbox',
+        '--no-first-run',
+        '--no-sandbox',
+        '--no-zygote',
+        '--deterministic-fetch',
+        '--disable-features=IsolateOrigins',
+        '--disable-site-isolation-trials',
+        '--hide-scrollbars', 
+        '--disable-web-security',
+        "--window-size=2000x1500"
+    ],
+    executablePath:"/bin/chromium"
+    });
 
-     browser = await Promise.resolve(bundledChromium.executablePath)
-    .then((executablePath) =>
-      !executablePath  
-        ? chromium.launch({ headless:true,
-          args: [
-            '--disable-gpu',
-            '--disable-dev-shm-usage',
-            '--disable-setuid-sandbox',
-            '--no-first-run',
-            '--no-sandbox',
-            '--no-zygote',
-            '--deterministic-fetch',
-            '--disable-features=IsolateOrigins',
-            '--disable-site-isolation-trials',
-            '--hide-scrollbars', 
-            '--disable-web-security',
-            "--window-size=2000x1500"
-        ], })
-        : chromium.launch({ executablePath })
-    );
+    //  browser = await Promise.resolve(bundledChromium.executablePath)
+    // .then((executablePath) =>
+    //   !executablePath  
+    //     ? chromium.launch({ headless:true,
+    //       args: [
+    //         '--disable-gpu',
+    //         '--disable-dev-shm-usage',
+    //         '--disable-setuid-sandbox',
+    //         '--no-first-run',
+    //         '--no-sandbox',
+    //         '--no-zygote',
+    //         '--deterministic-fetch',
+    //         '--disable-features=IsolateOrigins',
+    //         '--disable-site-isolation-trials',
+    //         '--hide-scrollbars', 
+    //         '--disable-web-security',
+    //         "--window-size=2000x1500"
+    //     ], })
+    //     : chromium.launch({ executablePath })
+    // );
 
     context = await browser.newContext({
       userAgent:
