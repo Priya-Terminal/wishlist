@@ -28,7 +28,7 @@ const addItem = async (req, res) => {
     }
 
     browser = await launchChromium({
-      headless:false,
+      headless:true,
       args: [
         '--disable-gpu',
         '--disable-dev-shm-usage',
