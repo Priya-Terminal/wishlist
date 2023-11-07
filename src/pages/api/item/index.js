@@ -28,7 +28,7 @@ const addItem = async (req, res) => {
     }
 
     browser = await launchChromium({
-      headless:true,
+      headless:false,
     });
     context = await browser.newContext({
       userAgent:
