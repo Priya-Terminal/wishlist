@@ -45,7 +45,6 @@ const addItem = async (req, res) => {
         '--disable-web-security',
         "--window-size=2000x1500"
     ],
-    executablePath:"/bin/chromium"
     });
 
     //  browser = await Promise.resolve(bundledChromium.executablePath)
