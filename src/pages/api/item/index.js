@@ -29,7 +29,7 @@ const addItem = async (req, res) => {
       return res.status(400).json({ error: "Item with the same link already exists" });
     }
 
-    browser = await launchChromium({
+    browser = await chromium.launch({
       headless:true,
       args: [
         '--disable-gpu',
