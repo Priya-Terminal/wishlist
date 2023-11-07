@@ -29,6 +29,19 @@ const addItem = async (req, res) => {
 
     browser = await launchChromium({
       headless:false,
+      args: [
+        '--disable-gpu',
+        '--disable-dev-shm-usage',
+        '--disable-setuid-sandbox',
+        '--no-first-run',
+        '--no-sandbox',
+        '--no-zygote',
+        '--deterministic-fetch',
+        '--disable-features=IsolateOrigins',
+        '--disable-site-isolation-trials',
+        '--hide-scrollbars', 
+        '--disable-web-security'
+    ],
     });
     context = await browser.newContext({
       userAgent:
