@@ -209,9 +209,9 @@ const addItem = async (req, res) => {
     // });
 
     // page = await browser.newPage();
-    const [page] = await browser.pages();
+    const page = await browser.newPage();
   
-    await page.goto(link, { waitUntil: "domcontentloaded" });
+    await page.goto(link);
 
     let title, description, image;
 
