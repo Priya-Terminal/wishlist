@@ -133,7 +133,7 @@ const router = createRouter();
 // };
 
 const addItem = async (req, res) => {
-  let browser, page;
+  let browser;
   try {
     await getDatabase();
 
@@ -202,11 +202,12 @@ const addItem = async (req, res) => {
     //     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
     // });
 
-    page = await browser.newPage();
+    // page = await browser.newPage();
+    const [page] = await browser.pages();
   
-      await page.goto(link, { waitUntil: "domcontentloaded" });
+    await page.goto(link, { waitUntil: "domcontentloaded" });
 
-      let title, description, image;
+    let title, description, image;
 
     try {
       title = await page.$eval('meta[property="og:title"]', (element) => element.getAttribute('content'));
