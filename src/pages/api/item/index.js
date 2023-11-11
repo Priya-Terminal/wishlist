@@ -4,10 +4,14 @@ import { withIronSessionApiRoute } from "iron-session/next";
 import { sessionOptions } from "@/lib/session";
 import { getDatabase, WishlistItem } from "@/models";
 import { ObjectId } from "mongodb";
-import { launchChromium } from 'playwright-aws-lambda';
-import bundledChromium, { puppeteer } from 'chrome-aws-lambda'; 
-import { chromium } from 'playwright-core';
+// import { launchChromium } from 'playwright-aws-lambda';
+// import bundledChromium, { puppeteer } from 'chrome-aws-lambda'; 
+// import { chromium } from 'playwright-core';
+// import Chromium from "chrome-aws-lambda";
+ 
 
+const chromium = require("chrome-aws-lambda");
+const puppeteer = require("puppeteer-core")
 const router = createRouter();
 
 // const addItem = async (req, res) => {
@@ -150,31 +154,33 @@ const addItem = async (req, res) => {
     if (existingItem) {
       return res.status(400).json({ error: "Item with the same link already exists" });
     }
-    const isLambdaEnvironment = process.env.AWS_LAMBDA_FUNCTION_VERSION !== undefined;
-    if(isLambdaEnvironment) {
-      browser = await puppeteer.launch({
-       executablePath:  'chrome.exe',
-       args: [
-          '--disable-gpu',
-          '--disable-dev-shm-usage',
-          '--disable-setuid-sandbox',
-          '--no-first-run',
-          '--no-sandbox',
-          '--no-zygote',
-          '--deterministic-fetch',
-          '--disable-features=IsolateOrigins',
-          '--disable-site-isolation-trials',
-          '--hide-scrollbars', 
-          '--disable-web-security',
-          "--window-size=2000x1500"
-       ],
-       headless: true,
-    });
-  } else {
+  //   const isLambdaEnvironment = process.env.AWS_LAMBDA_FUNCTION_VERSION !== undefined;
+  //   if(isLambdaEnvironment) {
+  //     browser = await puppeteer.launch({
+  //      executablePath:  'chrome.exe',
+  //      args: [
+  //         '--disable-gpu',
+  //         '--disable-dev-shm-usage',
+  //         '--disable-setuid-sandbox',
+  //         '--no-first-run',
+  //         '--no-sandbox',
+  //         '--no-zygote',
+  //         '--deterministic-fetch',
+  //         '--disable-features=IsolateOrigins',
+  //         '--disable-site-isolation-trials',
+  //         '--hide-scrollbars', 
+  //         '--disable-web-security',
+  //         "--window-size=2000x1500"
+  //      ],
+  //      headless: true,
+  //   });
+  // } else {
     browser = await puppeteer.launch({
+      args: chromium.args,
+      executablePath: chromium.executablePath,
       headless: true,
     });
-  }
+  // }
 
     //  browser = await Promise.resolve(bundledChromium.executablePath)
     // .then((executablePath) =>
