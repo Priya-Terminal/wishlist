@@ -11,7 +11,7 @@ import { ObjectId } from "mongodb";
  
 
 const chromium = require("chrome-aws-lambda");
-const puppeteer = require("puppeteer-core")
+// const puppeteer = require("puppeteer-core")
 const router = createRouter();
 
 // const addItem = async (req, res) => {
@@ -175,10 +175,12 @@ const addItem = async (req, res) => {
   //      headless: true,
   //   });
   // } else {
-    browser = await puppeteer.launch({
+    browser = await chromium.puppeteer.launch({
       args: chromium.args,
-      executablePath: chromium.executablePath,
-      headless: true,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true,
     });
   // }
 
