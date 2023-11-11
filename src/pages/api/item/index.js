@@ -204,7 +204,7 @@ const addItem = async (req, res) => {
 
     page = await browser.newPage();
   
-      await page.goto(link, {waitUntil: "networkidle"});
+      await page.goto(link, { waitUntil: "domcontentloaded" });
 
       let title, description, image;
 
