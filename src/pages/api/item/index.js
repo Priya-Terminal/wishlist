@@ -55,7 +55,9 @@ const addItem = async (req, res) => {
     browser = await puppeteer.launch(options);
 
     page = await browser.newPage();
-  
+    await page.setUserAgent('Your User Agent String');
+
+    const navigationPromise = page.waitForNavigation();
     await page.goto(link);
 
     let title, description, image;
@@ -77,7 +79,7 @@ const addItem = async (req, res) => {
     } catch (error) {
       image = "https://i.imgur.com/Ki1kaw4.png";
     }
-
+    await navigationPromise;
     const { price, priority } = req.body;
     const defaultTitle = "Title Not Found";
     const defaultImage = "https://i.imgur.com/Ki1kaw4.png";
