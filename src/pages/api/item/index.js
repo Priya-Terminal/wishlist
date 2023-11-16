@@ -9,135 +9,22 @@ import { ObjectId } from "mongodb";
 // import { chromium } from 'playwright-core';
 // import Chromium from "chrome-aws-lambda";
  
+let chrome = {};
+let puppeteer;
 
-const chromium = require("chrome-aws-lambda");
-// const puppeteer = require("puppeteer-core")
+if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+  chrome = require("chrome-aws-lambda");
+  puppeteer = require("puppeteer-core");
+} else {
+  puppeteer = require("puppeteer");
+}
+
 const router = createRouter();
 
-// const addItem = async (req, res) => {
-//   let browser, context, page;
-//   try {
-//     await getDatabase();
 
-//     const session = req.session;
-
-//     if (!session) {
-//       return res.status(401).json({ error: "Not authenticated" });
-//     }
-
-//     const { link } = req.body;
-//     const userId = session.user.id;
-
-//     const existingItem = await WishlistItem.findOne({ link, userId });
-//     if (existingItem) {
-//       return res.status(400).json({ error: "Item with the same link already exists" });
-//     }
-
-//     browser = await launchChromium({
-//       headless:true,
-//       args: [
-//         '--disable-gpu',
-//         '--disable-dev-shm-usage',
-//         '--disable-setuid-sandbox',
-//         '--no-first-run',
-//         '--no-sandbox',
-//         '--no-zygote',
-//         '--deterministic-fetch',
-//         '--disable-features=IsolateOrigins',
-//         '--disable-site-isolation-trials',
-//         '--hide-scrollbars', 
-//         '--disable-web-security',
-//         "--window-size=2000x1500"
-//     ],
-//     });
-
-//     //  browser = await Promise.resolve(bundledChromium.executablePath)
-//     // .then((executablePath) =>
-//     //   !executablePath  
-//     //     ? chromium.launch({ headless:true,
-//     //       args: [
-//     //         '--disable-gpu',
-//     //         '--disable-dev-shm-usage',
-//     //         '--disable-setuid-sandbox',
-//     //         '--no-first-run',
-//     //         '--no-sandbox',
-//     //         '--no-zygote',
-//     //         '--deterministic-fetch',
-//     //         '--disable-features=IsolateOrigins',
-//     //         '--disable-site-isolation-trials',
-//     //         '--hide-scrollbars', 
-//     //         '--disable-web-security',
-//     //         "--window-size=2000x1500"
-//     //     ], })
-//     //     : chromium.launch({ executablePath })
-//     // );
-
-//     context = await browser.newContext({
-//       userAgent:
-//         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
-//     });
-//     page = await context.newPage();
-  
-//       await page.goto(link, {waitUntil: "networkidle"});
-
-//       let title, description, image;
-
-//     try {
-//       title = await page.$eval('meta[property="og:title"]', (element) => element.getAttribute('content'));
-//     } catch (error) {
-//       title = "Title Not Found";
-//     }
-
-//     try {
-//       description = await page.$eval('meta[property="og:description"]', (element) => element.getAttribute('content'));
-//     } catch (error) {
-//       description = "Description Not Found";
-//     }
-
-//     try {
-//       image = await page.$eval('meta[property="og:image"]', (element) => element.getAttribute('content'));
-//     } catch (error) {
-//       image = "https://i.imgur.com/Ki1kaw4.png";
-//     }
-
-//     const { price, priority } = req.body;
-//     const defaultTitle = "Title Not Found";
-//     const defaultImage = "https://i.imgur.com/Ki1kaw4.png";
-//     const defaultDescription = "Description Not Found";
-//     const newItem = new WishlistItem({
-//       title: title || defaultTitle,
-//       description: description || defaultDescription,
-//       price: price || 0,
-//       image: image || defaultImage,
-//       priority: priority || 0,
-//       userId,
-//       link,
-//     });
-
-//     await newItem.save();
-
-//     res.send(newItem);
-
-//   } catch (error) {
-//     console.error("Error adding item to MongoDB:", error);
-//     console.error(error.stack);
-//     res.status(500).json({ error: "Failed to add item" });
-//   }finally {
-//     // Close the page and context after usage
-//     if (page) {
-//       await page.close();
-//     }
-//     if (context) {
-//       await context.close();
-//     }
-//     if (browser) {
-//       await browser.close();
-//     }
-//   }
-// };
 
 const addItem = async (req, res) => {
-  let browser;
+  let browser, page;
   try {
     await getDatabase();
 
@@ -154,64 +41,20 @@ const addItem = async (req, res) => {
     if (existingItem) {
       return res.status(400).json({ error: "Item with the same link already exists" });
     }
-  //   const isLambdaEnvironment = process.env.AWS_LAMBDA_FUNCTION_VERSION !== undefined;
-  //   if(isLambdaEnvironment) {
-  //     browser = await puppeteer.launch({
-  //      executablePath:  'chrome.exe',
-  //      args: [
-  //         '--disable-gpu',
-  //         '--disable-dev-shm-usage',
-  //         '--disable-setuid-sandbox',
-  //         '--no-first-run',
-  //         '--no-sandbox',
-  //         '--no-zygote',
-  //         '--deterministic-fetch',
-  //         '--disable-features=IsolateOrigins',
-  //         '--disable-site-isolation-trials',
-  //         '--hide-scrollbars', 
-  //         '--disable-web-security',
-  //         "--window-size=2000x1500"
-  //      ],
-  //      headless: true,
-  //   });
-  // } else {
-    browser = await chromium.puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true,
-    });
-  // }
+    let options = {};
 
-    //  browser = await Promise.resolve(bundledChromium.executablePath)
-    // .then((executablePath) =>
-    //   !executablePath  
-    //     ? chromium.launch({ headless:true,
-    //       args: [
-    //         '--disable-gpu',
-    //         '--disable-dev-shm-usage',
-    //         '--disable-setuid-sandbox',
-    //         '--no-first-run',
-    //         '--no-sandbox',
-    //         '--no-zygote',
-    //         '--deterministic-fetch',
-    //         '--disable-features=IsolateOrigins',
-    //         '--disable-site-isolation-trials',
-    //         '--hide-scrollbars', 
-    //         '--disable-web-security',
-    //         "--window-size=2000x1500"
-    //     ], })
-    //     : chromium.launch({ executablePath })
-    // );
+    if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+      options = {
+        args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
+        defaultViewport: chrome.defaultViewport,
+        executablePath: await chrome.executablePath,
+        headless: true,
+        ignoreHTTPSErrors: true,
+      };
+    }
+    browser = await puppeteer.launch(options);
 
-    // context = await browser.newContext({
-    //   userAgent:
-    //     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
-    // });
-
-    // page = await browser.newPage();
-    const page = await browser.newPage();
+    page = await browser.newPage();
   
     await page.goto(link);
 
