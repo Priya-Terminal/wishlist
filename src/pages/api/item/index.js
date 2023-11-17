@@ -8,16 +8,17 @@ import { ObjectId } from "mongodb";
 // import bundledChromium, { puppeteer } from 'chrome-aws-lambda'; 
 // import { chromium } from 'playwright-core';
 // import Chromium from "chrome-aws-lambda";
+import  puppeteer  from "puppeteer";
  
 let chrome = {};
-let puppeteer;
+// let puppeteer;
 
-if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-  chrome = require("chrome-aws-lambda");
-  puppeteer = require("puppeteer-core");
-} else {
-  puppeteer = require("puppeteer");
-}
+// if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+//   chrome = require("chrome-aws-lambda");
+//   puppeteer = require("puppeteer-core");
+// } else {
+//   puppeteer = require("puppeteer");
+// }
 
 const router = createRouter();
 
@@ -52,52 +53,58 @@ const addItem = async (req, res) => {
         ignoreHTTPSErrors: true,
       };
     }
-    browser = await puppeteer.launch(options);
+    // (async () => {
+    browser = await puppeteer.launch();
 
     page = await browser.newPage();
     await page.setUserAgent('Your User Agent String');
-
     const navigationPromise = page.waitForNavigation();
     await page.goto(link);
+    await page.waitForSelector('div')
+    .then(async () => {
+    
+      
+      // image-grid-imageContainer
+      let title, description, image;
 
-    let title, description, image;
+      try {
+        title = await page.$eval('meta[property="og:title"]', (element) => element.getAttribute('content'));
+      } catch (error) {
+        title = "Title Not Found";
+      }
 
-    try {
-      title = await page.$eval('meta[property="og:title"]', (element) => element.getAttribute('content'));
-    } catch (error) {
-      title = "Title Not Found";
+      try {
+        description = await page.$eval('meta[property="og:description"]', (element) => element.getAttribute('content'));
+      } catch (error) {
+        description = "Description Not Found";
+      }
+
+      try {
+        image = await page.$eval('meta[property="og:image"]', (element) => element.getAttribute('content'));
+      } catch (error) {
+        image = "https://i.imgur.com/Ki1kaw4.png";
+      }
+      await navigationPromise;
+      const { price, priority } = req.body;
+      const defaultTitle = "Title Not Found";
+      const defaultImage = "https://i.imgur.com/Ki1kaw4.png";
+      const defaultDescription = "Description Not Found";
+      const newItem = new WishlistItem({
+        title: title || defaultTitle,
+        description: description || defaultDescription,
+        price: price || 0,
+        image: image || defaultImage,
+        priority: priority || 0,
+        userId,
+        link,
+      });
+
+      await newItem.save();
+
+      res.send(newItem);
     }
-
-    try {
-      description = await page.$eval('meta[property="og:description"]', (element) => element.getAttribute('content'));
-    } catch (error) {
-      description = "Description Not Found";
-    }
-
-    try {
-      image = await page.$eval('meta[property="og:image"]', (element) => element.getAttribute('content'));
-    } catch (error) {
-      image = "https://i.imgur.com/Ki1kaw4.png";
-    }
-    await navigationPromise;
-    const { price, priority } = req.body;
-    const defaultTitle = "Title Not Found";
-    const defaultImage = "https://i.imgur.com/Ki1kaw4.png";
-    const defaultDescription = "Description Not Found";
-    const newItem = new WishlistItem({
-      title: title || defaultTitle,
-      description: description || defaultDescription,
-      price: price || 0,
-      image: image || defaultImage,
-      priority: priority || 0,
-      userId,
-      link,
-    });
-
-    await newItem.save();
-
-    res.send(newItem);
-
+    )
+  // })();
   } catch (error) {
     console.error("Error adding item to MongoDB:", error);
     console.error(error.stack);
