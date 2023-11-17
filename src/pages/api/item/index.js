@@ -60,7 +60,7 @@ const addItem = async (req, res) => {
     await page.setUserAgent('Your User Agent String');
     const navigationPromise = page.waitForNavigation();
     await page.goto(link);
-    await page.waitForSelector('div')
+    await page.waitForSelector('.pdp-details')
     .then(async () => {
     
       
