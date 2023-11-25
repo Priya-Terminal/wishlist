@@ -1,28 +1,12 @@
 import { createRouter } from "next-connect";
 import { withIronSessionApiRoute } from "iron-session/next";
+import { ObjectId } from "mongodb";
 
 import { sessionOptions } from "@/lib/session";
 import { getDatabase, WishlistItem } from "@/models";
-import { ObjectId } from "mongodb";
-// import { launchChromium } from 'playwright-aws-lambda';
-// import bundledChromium, { puppeteer } from 'chrome-aws-lambda'; 
-// import { chromium } from 'playwright-core';
-// import Chromium from "chrome-aws-lambda";
-import  puppeteer  from "puppeteer";
- 
-let chrome = {};
-// let puppeteer;
-
-// if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-//   chrome = require("chrome-aws-lambda");
-//   puppeteer = require("puppeteer-core");
-// } else {
-//   puppeteer = require("puppeteer");
-// }
+import scrapeData from "@/lib/scraping";
 
 const router = createRouter();
-
-
 
 const addItem = async (req, res) => {
   let browser, page;
@@ -40,76 +24,34 @@ const addItem = async (req, res) => {
 
     const existingItem = await WishlistItem.findOne({ link, userId });
     if (existingItem) {
-      return res.status(400).json({ error: "Item with the same link already exists" });
+      return res
+        .status(400)
+        .json({ error: "Item with the same link already exists" });
     }
-    let options = {};
 
-    if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-      options = {
-        args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
-        defaultViewport: chrome.defaultViewport,
-        executablePath: await chrome.executablePath,
-        headless: true,
-        ignoreHTTPSErrors: true,
-      };
-    }
-    // (async () => {
-    browser = await puppeteer.launch();
+    const { title, description, image } = await scrapeData(link);
+    const { price, priority } = req.body;
+    const defaultTitle = "Title Not Found";
+    const defaultImage = "https://i.imgur.com/Ki1kaw4.png";
+    const defaultDescription = "Description Not Found";
+    const newItem = new WishlistItem({
+      title: title || defaultTitle,
+      description: description || defaultDescription,
+      price: price || 0,
+      image: image || defaultImage,
+      priority: priority || 0,
+      userId,
+      link,
+    });
 
-    page = await browser.newPage();
-    await page.setUserAgent('Your User Agent String');
-    const navigationPromise = page.waitForNavigation();
-    await page.goto(link);
-    await page.waitForSelector('.pdp-details')
-    .then(async () => {
-    
-      
-      // image-grid-imageContainer
-      let title, description, image;
+    await newItem.save();
 
-      try {
-        title = await page.$eval('meta[property="og:title"]', (element) => element.getAttribute('content'));
-      } catch (error) {
-        title = "Title Not Found";
-      }
-
-      try {
-        description = await page.$eval('meta[property="og:description"]', (element) => element.getAttribute('content'));
-      } catch (error) {
-        description = "Description Not Found";
-      }
-
-      try {
-        image = await page.$eval('meta[property="og:image"]', (element) => element.getAttribute('content'));
-      } catch (error) {
-        image = "https://i.imgur.com/Ki1kaw4.png";
-      }
-      await navigationPromise;
-      const { price, priority } = req.body;
-      const defaultTitle = "Title Not Found";
-      const defaultImage = "https://i.imgur.com/Ki1kaw4.png";
-      const defaultDescription = "Description Not Found";
-      const newItem = new WishlistItem({
-        title: title || defaultTitle,
-        description: description || defaultDescription,
-        price: price || 0,
-        image: image || defaultImage,
-        priority: priority || 0,
-        userId,
-        link,
-      });
-
-      await newItem.save();
-
-      res.send(newItem);
-    }
-    )
-  // })();
+    res.send(newItem);
   } catch (error) {
     console.error("Error adding item to MongoDB:", error);
     console.error(error.stack);
     res.status(500).json({ error: "Failed to add item" });
-  }finally {
+  } finally {
     // Close the page and context after usage
     if (page) {
       await page.close();
@@ -187,7 +129,7 @@ const getItems = async (req, res) => {
     const userId = req.query.user || session.user.id;
     const items = await WishlistItem.find({ userId }).sort({ priority: 1 });
     for (const item of items) {
-      if (!item.description || item.description.trim() === '') {
+      if (!item.description || item.description.trim() === "") {
         item.description = "Description Not Found";
       }
     }
