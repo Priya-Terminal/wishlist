@@ -1,10 +1,74 @@
+// import { createRouter } from "next-connect";
+// import { withIronSessionApiRoute } from "iron-session/next";
+// import { ObjectId } from "mongodb";
+
+// import { sessionOptions } from "@/lib/session";
+// import { getDatabase, WishlistItem } from "@/models";
+// import scrapeData from "@/lib/scraping";
+
+// const router = createRouter();
+
+// const addItem = async (req, res) => {
+//   let browser, page;
+//   try {
+//     await getDatabase();
+
+//     const session = req.session;
+
+//     if (!session) {
+//       return res.status(401).json({ error: "Not authenticated" });
+//     }
+
+//     const { link } = req.body;
+//     const userId = session.user.id;
+
+//     const existingItem = await WishlistItem.findOne({ link, userId });
+//     if (existingItem) {
+//       return res
+//         .status(400)
+//         .json({ error: "Item with the same link already exists" });
+//     }
+
+//     const { title, description, image } = await scrapeData(link);
+//     const { price, priority } = req.body;
+//     const defaultTitle = "Title Not Found";
+//     const defaultImage = "https://i.imgur.com/Ki1kaw4.png";
+//     const defaultDescription = "Description Not Found";
+//     const newItem = new WishlistItem({
+//       title: title || defaultTitle,
+//       description: description || defaultDescription,
+//       price: price || 0,
+//       image: image || defaultImage,
+//       priority: priority || 0,
+//       userId,
+//       link,
+//     });
+
+//     await newItem.save();
+
+//     res.send(newItem);
+//   } catch (error) {
+//     console.error("Error adding item to MongoDB:", error);
+//     console.error(error.stack);
+//     res.status(500).json({ error: "Failed to add item" });
+//   } finally {
+//     // Close the page and context after usage
+//     if (page) {
+//       await page.close();
+//     }
+//     if (browser) {
+//       await browser.close();
+//     }
+//   }
+// };
+
 import { createRouter } from "next-connect";
 import { withIronSessionApiRoute } from "iron-session/next";
-import { ObjectId } from "mongodb";
-
-import { sessionOptions } from "@/lib/session";
+import puppeteer from 'puppeteer-core';
+// import puppeteer from 'puppeteer';
 import { getDatabase, WishlistItem } from "@/models";
-import scrapeData from "@/lib/scraping";
+import { sessionOptions } from "@/lib/session";
+import chromium from '@sparticuz/chromium-min';
 
 const router = createRouter();
 
@@ -29,7 +93,25 @@ const addItem = async (req, res) => {
         .json({ error: "Item with the same link already exists" });
     }
 
-    const { title, description, image } = await scrapeData(link);
+    // Launch Puppeteer using chromium-min executablePath
+    browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(
+        'https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar'
+      ),      
+      headless: true,
+      ignoreHTTPSErrors: true,
+    });
+
+    page = await browser.newPage();
+    await page.goto(link, { waitUntil: 'domcontentloaded' });
+
+    // Example: Scrape title, description, and image from the page using Puppeteer
+    const title = await page.title();
+    const description = await page.$eval('meta[name="description"]', (metaTag) => metaTag.getAttribute('content'));
+    const image = await page.$eval('meta[property="og:image"]', (metaTag) => metaTag.getAttribute('content'));
+
     const { price, priority } = req.body;
     const defaultTitle = "Title Not Found";
     const defaultImage = "https://i.imgur.com/Ki1kaw4.png";
@@ -52,7 +134,7 @@ const addItem = async (req, res) => {
     console.error(error.stack);
     res.status(500).json({ error: "Failed to add item" });
   } finally {
-    // Close the page and context after usage
+    // Close the page and browser after usage
     if (page) {
       await page.close();
     }
@@ -61,6 +143,9 @@ const addItem = async (req, res) => {
     }
   }
 };
+
+// export default withIronSessionApiRoute(router.post(addItem), sessionOptions);
+
 
 const updateItem = async (req, res) => {
   if (req.method === "PUT") {
@@ -95,7 +180,7 @@ const removeItem = async (req, res) => {
 
     try {
       await getDatabase();
-      const objectId = new ObjectId(itemId);
+      const objectId = new objectId(itemId);
 
       const result = await WishlistItem.deleteOne({ _id: objectId });
 
