@@ -51,20 +51,20 @@ const Home = () => {
 
   useEffect(() => {}, [user]);
 
-  const carouselData = [
-    {
-      id: 1,
-      title: 'Slide 1',
-      description: 'image 1',
-      image: '/images/image 1.jpeg',
-    },
-    {
-      id: 2,
-      title: 'Slide 2',
-      description: 'image 2',
-      image: '/images/image3.jpeg',
-    },
-  ];
+  // const carouselData = [
+  //   {
+  //     id: 1,
+  //     title: 'Slide 1',
+  //     description: 'image 1',
+  //     image: '/images/image 1.jpeg',
+  //   },
+  //   {
+  //     id: 2,
+  //     title: 'Slide 2',
+  //     description: 'image 2',
+  //     image: '/images/image3.jpeg',
+  //   },
+  // ];
 
   return (
     <div
@@ -99,7 +99,7 @@ const Home = () => {
           </div>
         </div>
         <div className="carousel-container mt-12">
-        <Carousel>
+        {/* <Carousel>
           {carouselData.map((slide) => (
             <div key={slide.id}>
               <Image src={slide.image} alt={slide.title} width={200} height={100} />
@@ -107,7 +107,7 @@ const Home = () => {
               <p>{slide.description}</p>
             </div>
           ))}
-        </Carousel>
+        </Carousel> */}
         </div>
       </div>
     </div>
