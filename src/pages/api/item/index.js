@@ -4,14 +4,14 @@ import { withIronSessionApiRoute } from "iron-session/next";
 import { sessionOptions } from "@/lib/session";
 import { getDatabase, WishlistItem } from "@/models";
 import { ObjectId } from "mongodb";
-import { launchChromium } from 'playwright-aws-lambda';
-import bundledChromium from 'chrome-aws-lambda'; 
-import { chromium } from 'playwright-core';
+import { Builder, By, until } from 'selenium-webdriver';
+import chrome from 'selenium-webdriver/chrome';
 
 const router = createRouter();
 
 const addItem = async (req, res) => {
-  let browser, context, page;
+  let driver;
+
   try {
     await getDatabase();
 
@@ -29,77 +29,67 @@ const addItem = async (req, res) => {
       return res.status(400).json({ error: "Item with the same link already exists" });
     }
 
-    browser = await launchChromium({
-      headless:true,
-      args: [
-        '--disable-gpu',
-        '--disable-dev-shm-usage',
-        '--disable-setuid-sandbox',
-        '--no-first-run',
-        '--no-sandbox',
-        '--no-zygote',
-        '--deterministic-fetch',
-        '--disable-features=IsolateOrigins',
-        '--disable-site-isolation-trials',
-        '--hide-scrollbars', 
-        '--disable-web-security',
-        "--window-size=2000x1500"
-    ],
-    });
+    const chromeOptions = new chrome.Options();
+    chromeOptions.addArguments([
+      '--disable-gpu',
+      '--no-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-setuid-sandbox',
+      '--no-first-run',
+      '--no-zygote',
+      '--deterministic-fetch',
+      '--disable-features=IsolateOrigins',
+      '--disable-site-isolation-trials',
+      '--hide-scrollbars', 
+      '--disable-web-security',
+      '--window-size=2000x1500',
+      '--ignore-certificate-errors',
+      '--headless',
+    ]);
 
-    //  browser = await Promise.resolve(bundledChromium.executablePath)
-    // .then((executablePath) =>
-    //   !executablePath  
-    //     ? chromium.launch({ headless:true,
-    //       args: [
-    //         '--disable-gpu',
-    //         '--disable-dev-shm-usage',
-    //         '--disable-setuid-sandbox',
-    //         '--no-first-run',
-    //         '--no-sandbox',
-    //         '--no-zygote',
-    //         '--deterministic-fetch',
-    //         '--disable-features=IsolateOrigins',
-    //         '--disable-site-isolation-trials',
-    //         '--hide-scrollbars', 
-    //         '--disable-web-security',
-    //         "--window-size=2000x1500"
-    //     ], })
-    //     : chromium.launch({ executablePath })
-    // );
+    driver = await new Builder()
+      .forBrowser('chrome')
+      .setChromeOptions(chromeOptions)
+      .build();
 
-    context = await browser.newContext({
-      userAgent:
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
-    });
-    page = await context.newPage();
-  
-      await page.goto(link, {waitUntil: "networkidle"});
-
-      let title, description, image;
+    await driver.get(link);
 
     try {
-      title = await page.$eval('meta[property="og:title"]', (element) => element.getAttribute('content'));
+      await driver.wait(until.titleContains('Expected Page Title'), 15000);
     } catch (error) {
-      title = "Title Not Found";
+      console.error("Error during waiting condition:", error);
+    }
+
+    let title = 'Title Not Found';
+    let description = 'Description Not Found';
+    let image = 'https://i.imgur.com/Ki1kaw4.png';
+
+    try {
+      const titleElement = await driver.findElement(By.css('meta[property="og:title"], meta[name="title"]'));
+      title = await titleElement.getAttribute('content');
+    } catch (error) {
+      console.error("Error retrieving title:", error);
     }
 
     try {
-      description = await page.$eval('meta[property="og:description"]', (element) => element.getAttribute('content'));
+      const descriptionElement = await driver.findElement(By.css('meta[property="og:description"]'));
+      description = await descriptionElement.getAttribute('content');
     } catch (error) {
-      description = "Description Not Found";
+      console.error("Error retrieving description:", error);
     }
 
     try {
-      image = await page.$eval('meta[property="og:image"]', (element) => element.getAttribute('content'));
+      const imageElement = await driver.findElement(By.css('meta[property="og:image"]'));
+      image = await imageElement.getAttribute('content');
     } catch (error) {
-      image = "https://i.imgur.com/Ki1kaw4.png";
+      console.error("Error retrieving image:", error);
     }
 
     const { price, priority } = req.body;
-    const defaultTitle = "Title Not Found";
-    const defaultImage = "https://i.imgur.com/Ki1kaw4.png";
-    const defaultDescription = "Description Not Found";
+    const defaultTitle = 'Title Not Found';
+    const defaultImage = 'https://i.imgur.com/Ki1kaw4.png';
+    const defaultDescription = 'Description Not Found';
+
     const newItem = new WishlistItem({
       title: title || defaultTitle,
       description: description || defaultDescription,
@@ -112,22 +102,15 @@ const addItem = async (req, res) => {
 
     await newItem.save();
 
-    res.send(newItem);
+    res.status(201).json(newItem);
 
   } catch (error) {
     console.error("Error adding item to MongoDB:", error);
     console.error(error.stack);
     res.status(500).json({ error: "Failed to add item" });
-  }finally {
-    // Close the page and context after usage
-    if (page) {
-      await page.close();
-    }
-    if (context) {
-      await context.close();
-    }
-    if (browser) {
-      await browser.close();
+  } finally {
+    if (driver) {
+      await driver.quit();
     }
   }
 };
