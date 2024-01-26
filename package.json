@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "engines": {
+    "node": "^16.x"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
@@ -28,10 +31,8 @@
     "next": "^13.5.6",
     "next-auth": "^4.23.1",
     "next-connect": "^1.0.0",
-    "playwright-aws-lambda": "^0.10.0",
-    "playwright-core": "^1.40.0",
     "postcss": "^8.4.31",
-    "puppeteer-core": "^21.5.2",
+    "puppeteer-core": "^21.9.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-responsive-carousel": "^3.2.23",

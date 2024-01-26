@@ -1,4 +1,4 @@
-import * as playwright from "playwright-aws-lambda";
+import puppeteer from "puppeteer-core";
 
 import amazonScraper from "./amazon";
 
@@ -9,7 +9,8 @@ const getScraperProvider = (url) => {
 };
 
 const scrapeData = async (url) => {
-  const browser = await playwright.launchChromium({
+  const browser = await puppeteer.connect({
+    browserWSEndpoint: process.env.PUPPETEER_WS_ENDPOINT,
     headless: true, // Set headless mode to true
     args: ['--no-sandbox', '--disable-setuid-sandbox'], // Reduce resource usage
   });
