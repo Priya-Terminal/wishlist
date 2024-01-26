@@ -14,9 +14,10 @@ const scrapeData = async (url) => {
     headless: true, // Set headless mode to true
     args: ['--no-sandbox', '--disable-setuid-sandbox'], // Reduce resource usage
   });
-  const context = await browser.newContext();
-  const page = await context.newPage();
+  const page = await browser.newPage();
   await page.goto(url);
+  console.log('url', url);
+  console.log('html', await page.content());
   
   const scraper = getScraperProvider(url);
   const scrapedData = await scraper(page);
