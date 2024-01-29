@@ -4,13 +4,11 @@ import { withIronSessionApiRoute } from "iron-session/next";
 import { sessionOptions } from "@/lib/session";
 import { getDatabase, WishlistItem } from "@/models";
 import { ObjectId } from "mongodb";
-import { Builder, By, until } from 'selenium-webdriver';
-import chrome from 'selenium-webdriver/chrome';
 
 const router = createRouter();
 
 const addItem = async (req, res) => {
-  let driver;
+
 
   try {
     await getDatabase();
@@ -29,73 +27,8 @@ const addItem = async (req, res) => {
       return res.status(400).json({ error: "Item with the same link already exists" });
     }
 
-    const chromeOptions = new chrome.Options();
-    chromeOptions.addArguments([
-      '--disable-gpu',
-      '--no-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-setuid-sandbox',
-      '--no-first-run',
-      '--no-zygote',
-      '--deterministic-fetch',
-      '--disable-features=IsolateOrigins',
-      '--disable-site-isolation-trials',
-      '--hide-scrollbars', 
-      '--disable-web-security',
-      '--window-size=2000x1500',
-      '--ignore-certificate-errors',
-      '--headless',
-    ]);
-
-    driver = await new Builder()
-      .forBrowser('chrome')
-      .setChromeOptions(chromeOptions)
-      .build();
-
-    await driver.get(link);
-
-    try {
-      await driver.wait(until.titleContains('Expected Page Title'), 15000);
-    } catch (error) {
-      console.error("Error during waiting condition:", error);
-    }
-
-    let title = 'Title Not Found';
-    let description = 'Description Not Found';
-    let image = 'https://i.imgur.com/Ki1kaw4.png';
-
-    try {
-      const titleElement = await driver.findElement(By.css('meta[property="og:title"], meta[name="title"]'));
-      title = await titleElement.getAttribute('content');
-    } catch (error) {
-      console.error("Error retrieving title:", error);
-    }
-
-    try {
-      const descriptionElement = await driver.findElement(By.css('meta[property="og:description"]'));
-      description = await descriptionElement.getAttribute('content');
-    } catch (error) {
-      console.error("Error retrieving description:", error);
-    }
-
-    try {
-      const imageElement = await driver.findElement(By.css('meta[property="og:image"]'));
-      image = await imageElement.getAttribute('content');
-    } catch (error) {
-      console.error("Error retrieving image:", error);
-    }
-
-    const { price, priority } = req.body;
-    const defaultTitle = 'Title Not Found';
-    const defaultImage = 'https://i.imgur.com/Ki1kaw4.png';
-    const defaultDescription = 'Description Not Found';
 
     const newItem = new WishlistItem({
-      title: title || defaultTitle,
-      description: description || defaultDescription,
-      price: price || 0,
-      image: image || defaultImage,
-      priority: priority || 0,
       userId,
       link,
     });
@@ -106,13 +39,8 @@ const addItem = async (req, res) => {
 
   } catch (error) {
     console.error("Error adding item to MongoDB:", error);
-    console.error(error.stack);
     res.status(500).json({ error: "Failed to add item" });
-  } finally {
-    if (driver) {
-      await driver.quit();
-    }
-  }
+  } 
 };
 
 const updateItem = async (req, res) => {

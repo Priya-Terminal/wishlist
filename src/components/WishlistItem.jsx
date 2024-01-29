@@ -20,9 +20,6 @@ const WishlistItem = ({ item, onEdit, onSave, onDelete, editingItem }) => {
 
   return (
     <div className={`mb-4 p-4 border rounded-md flex ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
-      <div className="w-1/4 pr-4">
-        <img src={item.image} alt={item.title} className={`w-34 h-30 object-cover rounded-md ${darkMode ? 'border-gray-300' : ''}`} />
-      </div>
       <div className="w-3/4">
         <p className={`font-semibold mb-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>Item Link:</p>
         <div className={`overflow-x-auto ${darkMode ? 'dark:text-blue-300' : 'text-blue-600'}`}>
@@ -39,10 +36,6 @@ const WishlistItem = ({ item, onEdit, onSave, onDelete, editingItem }) => {
             </a>
           )}
         </div>
-        <p className={`font-semibold mb-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>Title:</p>
-        <p className={`${darkMode ? 'text-gray-400' : ''}`}>{item.title}</p>
-        <p className={`font-semibold mb-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>Description:</p>
-        <p className={`${darkMode ? 'text-gray-400' : ''}`}>{item.description || "No description available."}</p>
         <div className="mt-2">
           {item.isEditing || item === editingItem ? (
             <>
